@@ -1,0 +1,21 @@
+{
+  "menu": [
+    {
+      "id": "knitting-tools",
+      "title": "편물 도구",
+      "children": [
+        {
+          "id": "gauge-tools",
+          "title": "게이지 관련",
+          "children": [
+            {
+              "id": "gauge-converter",
+              "title": "게이지 변환 계산기",
+              "url": "pages/knitting-tools/gauge-tools/gauge-converter.html"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

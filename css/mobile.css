@@ -1,0 +1,203 @@
+/* ===== Mobile-First Responsive Design ===== */
+
+/* Mobile Devices (< 768px) */
+@media (max-width: 767px) {
+  /* Layout */
+  main {
+    padding: var(--spacing-md);
+  }
+
+  article {
+    padding: var(--spacing-md);
+  }
+
+  /* Typography */
+  h1 {
+    font-size: 24px;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+
+  h3 {
+    font-size: 18px;
+  }
+
+  /* Menu - Mobile Hamburger */
+  .menu-toggle {
+    display: flex;
+  }
+
+  .menu-depth-0 {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    right: 0;
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: var(--spacing-md);
+    z-index: 999;
+  }
+
+  .menu-depth-0.show {
+    display: flex;
+  }
+
+  .menu-depth-0 > li {
+    width: 100%;
+  }
+
+  .menu-depth-0 > li > button {
+    width: 100%;
+  }
+
+  /* Submenu Positioning */
+  .menu-depth-1,
+  .menu-depth-2 {
+    position: static;
+    border: none;
+    box-shadow: none;
+    margin-left: var(--spacing-md);
+    margin-top: var(--spacing-xs);
+    transform: none;
+    width: 100%;
+  }
+
+  .menu-depth-1.show,
+  .menu-depth-2.show {
+    display: block;
+  }
+
+  /* Touch Target Sizes */
+  button,
+  input,
+  select {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Form Inputs */
+  input[type="text"],
+  input[type="number"],
+  input[type="email"],
+  select,
+  textarea {
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+
+  /* Spacing */
+  section {
+    margin-bottom: var(--spacing-lg);
+  }
+}
+
+/* Tablet Devices (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  /* Layout */
+  main {
+    padding: var(--spacing-lg);
+  }
+
+  /* Typography */
+  h1 {
+    font-size: 28px;
+  }
+
+  h2 {
+    font-size: 22px;
+  }
+
+  /* Menu */
+  .menu-depth-0 {
+    flex-wrap: wrap;
+  }
+
+  .menu-depth-1 {
+    min-width: 180px;
+  }
+}
+
+/* Desktop Devices (≥ 1024px) */
+@media (min-width: 1024px) {
+  /* Menu Hover Effects */
+  .menu-depth-0 li:hover > .menu-depth-1 {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .menu-depth-1 li:hover > .menu-depth-2 {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+}
+
+/* Large Desktop (≥ 1440px) */
+@media (min-width: 1440px) {
+  :root {
+    --font-size-base: 18px;
+    --font-size-h1: 36px;
+    --font-size-h2: 28px;
+    --font-size-h3: 22px;
+  }
+
+  main {
+    max-width: 1400px;
+  }
+}
+
+/* Print Styles */
+@media print {
+  #menu-container {
+    display: none;
+  }
+
+  main {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  button {
+    display: none;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  :root {
+    --border-color: #000;
+    --text-color: #000;
+    --bg-color: #fff;
+  }
+
+  button {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary-color: #5ba3f5;
+    --text-color: #e4e4e4;
+    --text-light: #a0a0a0;
+    --bg-color: #1a1a1a;
+    --bg-light: #2d2d2d;
+    --border-color: #444;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  input[type="email"],
+  select,
+  textarea {
+    background-color: var(--bg-light);
+    color: var(--text-color);
+  }
+}

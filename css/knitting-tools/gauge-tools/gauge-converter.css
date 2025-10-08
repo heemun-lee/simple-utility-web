@@ -1,0 +1,220 @@
+/* ===== Gauge Converter Styles ===== */
+
+.gauge-converter {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Unit Selection */
+.unit-selection {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.unit-selection legend.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.radio-group {
+  display: flex;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: white;
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 44px;
+  font-weight: 500;
+}
+
+.radio-label:hover {
+  border-color: var(--primary-color);
+  background: var(--bg-light);
+}
+
+.radio-label:focus-within {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+.radio-label input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.radio-label input[type="radio"]:checked + span {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.radio-label:has(input[type="radio"]:checked) {
+  background: var(--primary-light);
+  border-color: var(--primary-color);
+}
+
+.gauge-section {
+  background: white;
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius);
+  margin-bottom: var(--spacing-lg);
+  border: 1px solid var(--border-color);
+}
+
+.gauge-section h2 {
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-md);
+  font-size: var(--font-size-h3);
+}
+
+.gauge-input-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.gauge-input-group:last-child {
+  margin-bottom: 0;
+}
+
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-wrapper label {
+  margin-bottom: var(--spacing-xs);
+  font-weight: 500;
+  color: var(--text-color);
+  font-size: var(--font-size-small);
+}
+
+.input-wrapper input {
+  width: 100%;
+}
+
+.calculate-button {
+  width: 100%;
+  padding: var(--spacing-md);
+  font-size: var(--font-size-large);
+  font-weight: 600;
+  margin-top: var(--spacing-md);
+}
+
+.result-section {
+  background: var(--bg-light);
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius);
+  border: 2px solid var(--primary-color);
+  margin-top: var(--spacing-lg);
+}
+
+.result-section h2 {
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-md);
+}
+
+.result-display {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.result-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: white;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+}
+
+.result-label {
+  font-weight: 500;
+  color: var(--text-light);
+}
+
+.result-value {
+  font-size: var(--font-size-h2);
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.result-value:empty::before {
+  content: '-';
+  color: var(--border-color);
+}
+
+/* Error State */
+.error-message {
+  background: #ffe6e6;
+  color: var(--error-color);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--error-color);
+  margin-top: var(--spacing-md);
+}
+
+/* Mobile Styles */
+@media (max-width: 767px) {
+  .gauge-input-group {
+    grid-template-columns: 1fr;
+  }
+
+  .radio-group {
+    flex-direction: column;
+  }
+
+  .radio-label {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .result-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
+
+  .result-value {
+    font-size: var(--font-size-large);
+  }
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  .gauge-section {
+    background: var(--bg-light);
+    border-color: var(--border-color);
+  }
+
+  .result-section {
+    background: #2d2d2d;
+    border-color: var(--primary-color);
+  }
+
+  .result-item {
+    background: var(--bg-light);
+    border-color: var(--border-color);
+  }
+}

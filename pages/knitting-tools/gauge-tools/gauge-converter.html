@@ -1,0 +1,190 @@
+<link rel="stylesheet" href="../../../css/knitting-tools/gauge-tools/gauge-converter.css">
+
+<article class="gauge-converter">
+  <h1>게이지 변환 계산기</h1>
+
+  <p>
+    편물의 기준 게이지와 실제 게이지를 입력하여 필요한 코수와 단수를 계산합니다.
+  </p>
+
+  <div id="error-container"></div>
+
+  <!-- 측정 기준 단위 선택 -->
+  <section class="gauge-section">
+    <h2>측정 기준</h2>
+    <p class="text-light">게이지 측정에 사용한 기준 크기를 선택하세요</p>
+
+    <fieldset class="unit-selection">
+      <legend class="sr-only">측정 기준 단위</legend>
+      <div class="radio-group">
+        <label class="radio-label">
+          <input
+            type="radio"
+            name="gauge-unit"
+            value="10cm"
+            id="unit-10cm"
+            checked
+            aria-label="10cm 기준"
+          />
+          <span>10cm x 10cm 기준</span>
+        </label>
+
+        <label class="radio-label">
+          <input
+            type="radio"
+            name="gauge-unit"
+            value="4inch"
+            id="unit-4inch"
+            aria-label="4 inch 기준"
+          />
+          <span>4 inch x 4 inch 기준</span>
+        </label>
+      </div>
+    </fieldset>
+  </section>
+
+  <!-- 기준 게이지 -->
+  <section class="gauge-section">
+    <h2>기준 게이지</h2>
+    <p class="text-light">도안이나 패턴에서 제시하는 게이지를 입력하세요</p>
+
+    <div class="gauge-input-group">
+      <div class="input-wrapper">
+        <label for="base-stitches">코수 (10cm 기준)</label>
+        <input
+          type="number"
+          id="base-stitches"
+          placeholder="예: 25"
+          min="1"
+          max="1000"
+          aria-label="기준 게이지 코수"
+        />
+      </div>
+
+      <div class="input-wrapper">
+        <label for="base-rows">단수 (10cm 기준)</label>
+        <input
+          type="number"
+          id="base-rows"
+          placeholder="예: 30"
+          min="1"
+          max="1000"
+          aria-label="기준 게이지 단수"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- 실제 게이지 -->
+  <section class="gauge-section">
+    <h2>실제 게이지</h2>
+    <p class="text-light">실제로 뜬 게이지를 입력하세요</p>
+
+    <div class="gauge-input-group">
+      <div class="input-wrapper">
+        <label for="actual-stitches">코수 (10cm 기준)</label>
+        <input
+          type="number"
+          id="actual-stitches"
+          placeholder="예: 20"
+          min="1"
+          max="1000"
+          aria-label="실제 게이지 코수"
+        />
+      </div>
+
+      <div class="input-wrapper">
+        <label for="actual-rows">단수 (10cm 기준)</label>
+        <input
+          type="number"
+          id="actual-rows"
+          placeholder="예: 25"
+          min="1"
+          max="1000"
+          aria-label="실제 게이지 단수"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- 변환할 값 -->
+  <section class="gauge-section">
+    <h2>변환할 값</h2>
+    <p class="text-light">도안의 코수나 단수를 입력하세요 (둘 다 입력 가능)</p>
+
+    <div class="gauge-input-group">
+      <div class="input-wrapper">
+        <label for="input-stitches">코수 (선택)</label>
+        <input
+          type="number"
+          id="input-stitches"
+          placeholder="예: 100"
+          min="0"
+          max="10000"
+          aria-label="변환할 코수"
+        />
+      </div>
+
+      <div class="input-wrapper">
+        <label for="input-rows">단수 (선택)</label>
+        <input
+          type="number"
+          id="input-rows"
+          placeholder="예: 120"
+          min="0"
+          max="10000"
+          aria-label="변환할 단수"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- 계산 버튼 -->
+  <button id="calculate" class="calculate-button" aria-label="게이지 변환 계산하기">
+    계산하기
+  </button>
+
+  <!-- 결과 -->
+  <section id="result" class="result-section">
+    <h2>변환 결과</h2>
+
+    <div class="result-display">
+      <div class="result-item">
+        <span class="result-label">변환된 코수:</span>
+        <span id="result-stitches" class="result-value" aria-live="polite"></span>
+      </div>
+
+      <div class="result-item">
+        <span class="result-label">변환된 단수:</span>
+        <span id="result-rows" class="result-value" aria-live="polite"></span>
+      </div>
+    </div>
+  </section>
+</article>
+
+<script type="module">
+  import { calculate, handleUnitChange } from '../../../js/knitting-tools/gauge-tools/gauge-converter.js';
+  import { on } from '../../../js/utils.js';
+
+  // 계산 버튼 클릭 이벤트
+  const calculateButton = document.getElementById('calculate');
+  if (calculateButton) {
+    on(calculateButton, 'click', calculate);
+  }
+
+  // 측정 단위 변경 이벤트
+  const unitRadios = document.querySelectorAll('input[name="gauge-unit"]');
+  unitRadios.forEach((radio) => {
+    on(radio, 'change', handleUnitChange);
+  });
+
+  // Enter 키로 계산
+  const inputs = document.querySelectorAll('input[type="number"]');
+  inputs.forEach((input) => {
+    on(input, 'keypress', (e) => {
+      if (e.key === 'Enter') {
+        calculate();
+      }
+    });
+  });
+</script>
