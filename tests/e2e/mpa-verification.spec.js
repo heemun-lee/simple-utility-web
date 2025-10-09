@@ -41,7 +41,7 @@ test.describe('MPA 구조 검증', () => {
     });
 
     // 게이지 변환기 링크 클릭
-    const gaugeLink = page.locator('.nav-item a[href="/pages/knitting-tools/gauge-tools/index.html"]');
+    const gaugeLink = page.locator('.nav-item a[href="./pages/knitting-tools/gauge-tools/index.html"]');
     await gaugeLink.click();
 
     // URL 변경 확인

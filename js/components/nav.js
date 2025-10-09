@@ -6,12 +6,50 @@
 import { loadMenuData } from '../utils/menu-loader.js';
 
 /**
+ * 현재 페이지의 depth 계산 (프로젝트 root로부터의 깊이)
+ * @returns {number} 페이지 depth
+ */
+function getPageDepth() {
+  const pathname = window.location.pathname;
+  // Remove trailing /index.html or .html
+  const pathWithoutFile = pathname.replace(/\/[^\/]+\.html$/, '');
+  // Split and filter empty parts
+  const parts = pathWithoutFile.split('/').filter(p => p);
+  // If first part is project name (for GitHub Pages), remove it
+  if (parts.length > 0 && parts[0] === 'simple-utility-web') {
+    parts.shift();
+  }
+  return parts.length;
+}
+
+/**
+ * 현재 페이지 depth에 맞게 경로 조정
+ * @param {string} path - 원본 경로
+ * @param {number} depth - 현재 페이지 depth
+ * @returns {string} 조정된 경로
+ */
+function adjustPath(path, depth) {
+  // ./로 시작하는 상대 경로를 depth에 맞게 조정
+  if (path.startsWith('./')) {
+    if (depth === 0) {
+      // 홈페이지(depth 0)에서는 원본 경로 그대로 사용
+      return path;
+    }
+    // 하위 페이지에서는 ../ 추가
+    const prefix = '../'.repeat(depth);
+    return prefix + path.substring(2);
+  }
+  return path;
+}
+
+/**
  * 네비게이션 HTML 렌더링
  * @param {string} currentPageId - 현재 페이지 ID (활성 표시용)
  * @returns {Promise<string>} 네비게이션 HTML 문자열
  */
 export async function renderNavigation(currentPageId) {
   const menuData = await loadMenuData();
+  const depth = getPageDepth();
 
   // order 기준 정렬
   const sortedItems = menuData.items.sort((a, b) => a.order - b.order);
@@ -22,10 +60,11 @@ export async function renderNavigation(currentPageId) {
       const isActive = item.id === currentPageId;
       const ariaCurrent = isActive ? ' aria-current="page"' : '';
       const icon = item.icon || '';
+      const adjustedPath = adjustPath(item.path, depth);
 
       return `
         <li class="nav-item">
-          <a href="${item.path}"${ariaCurrent}>
+          <a href="${adjustedPath}"${ariaCurrent}>
             ${icon} ${item.label}
           </a>
         </li>

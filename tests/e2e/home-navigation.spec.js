@@ -76,15 +76,15 @@ test.describe('홈 페이지 네비게이션', () => {
   test('네비게이션 링크가 올바른 경로를 가진다', async ({ page }) => {
     // 홈 링크 확인
     const homeLink = page.locator('.nav-item a').filter({ hasText: '홈' });
-    await expect(homeLink).toHaveAttribute('href', '/index.html');
+    await expect(homeLink).toHaveAttribute('href', './index.html');
 
-    // 모든 링크가 절대 경로를 사용하는지 확인
+    // 모든 링크가 상대 경로를 사용하는지 확인
     const allLinks = page.locator('.nav-item a');
     const count = await allLinks.count();
 
     for (let i = 0; i < count; i++) {
       const href = await allLinks.nth(i).getAttribute('href');
-      expect(href).toMatch(/^\/.*\.html$/);
+      expect(href).toMatch(/^\.\.?\/.*\.html$/);
     }
   });
 });

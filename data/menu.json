@@ -4,7 +4,7 @@
     {
       "id": "home",
       "label": "홈",
-      "path": "/index.html",
+      "path": "./index.html",
       "category": "main",
       "order": 1,
       "icon": "🏠"
@@ -12,7 +12,7 @@
     {
       "id": "gauge-converter",
       "label": "게이지 변환",
-      "path": "/pages/knitting-tools/gauge-tools/index.html",
+      "path": "./pages/knitting-tools/gauge-tools/index.html",
       "category": "converter",
       "order": 10,
       "icon": "🔧"

@@ -1,0 +1,64 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - navigation "주요 메뉴" [ref=e3]:
+    - list [ref=e4]:
+      - listitem [ref=e5]:
+        - link "🏠 홈" [ref=e6]:
+          - /url: ../../../index.html
+  - main [ref=e7]:
+    - article [ref=e8]:
+      - heading "게이지 변환 계산기" [level=1] [ref=e9]
+      - paragraph [ref=e10]: 편물의 기준 게이지와 실제 게이지를 입력하여 필요한 코수와 단수를 계산합니다.
+      - alert
+      - generic [ref=e11]:
+        - heading "측정 기준" [level=2] [ref=e12]
+        - paragraph [ref=e13]: 게이지 측정에 사용한 기준 크기를 선택하세요
+        - group "측정 기준 단위" [ref=e14]:
+          - generic [ref=e15]: 측정 기준 단위
+          - generic [ref=e16]:
+            - generic [ref=e17] [cursor=pointer]:
+              - radio "10cm 기준" [checked] [ref=e18]
+              - generic [ref=e19]: 10cm x 10cm 기준
+            - generic [ref=e20] [cursor=pointer]:
+              - radio "4 inch 기준" [ref=e21]
+              - generic [ref=e22]: 4 inch x 4 inch 기준
+      - generic [ref=e23]:
+        - heading "기준 게이지" [level=2] [ref=e24]
+        - paragraph [ref=e25]: 도안이나 패턴에서 제시하는 게이지를 입력하세요
+        - generic [ref=e26]:
+          - generic [ref=e27]:
+            - text: 코수 (10cm 기준)
+            - spinbutton "기준 게이지 코수" [ref=e28]
+          - generic [ref=e29]:
+            - text: 단수 (10cm 기준)
+            - spinbutton "기준 게이지 단수" [ref=e30]
+      - generic [ref=e31]:
+        - heading "실제 게이지" [level=2] [ref=e32]
+        - paragraph [ref=e33]: 실제로 뜬 게이지를 입력하세요
+        - generic [ref=e34]:
+          - generic [ref=e35]:
+            - text: 코수 (10cm 기준)
+            - spinbutton "실제 게이지 코수" [ref=e36]
+          - generic [ref=e37]:
+            - text: 단수 (10cm 기준)
+            - spinbutton "실제 게이지 단수" [ref=e38]
+      - generic [ref=e39]:
+        - heading "변환할 값" [level=2] [ref=e40]
+        - paragraph [ref=e41]: 도안의 코수나 단수를 입력하세요 (둘 다 입력 가능)
+        - generic [ref=e42]:
+          - generic [ref=e43]:
+            - text: 코수 (선택)
+            - spinbutton "변환할 코수" [ref=e44]
+          - generic [ref=e45]:
+            - text: 단수 (선택)
+            - spinbutton "변환할 단수" [ref=e46]
+      - button "게이지 변환 계산하기" [ref=e47] [cursor=pointer]: 계산하기
+  - contentinfo [ref=e49]:
+    - generic [ref=e50]:
+      - paragraph [ref=e51]: © 2025 Simple Utility Web. All rights reserved.
+      - navigation "바닥글 링크" [ref=e52]:
+        - link "GitHub" [ref=e53]:
+          - /url: https://github.com/hmlee
+```

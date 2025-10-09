@@ -6,7 +6,7 @@ test.describe('게이지 변환기 네비게이션', () => {
     await page.goto('/');
 
     // 네비게이션의 게이지 변환기 링크 클릭
-    const gaugeLink = page.locator('.nav-item a[href="/pages/knitting-tools/gauge-tools/index.html"]');
+    const gaugeLink = page.locator('.nav-item a[href="./pages/knitting-tools/gauge-tools/index.html"]');
     await expect(gaugeLink).toBeVisible();
     await gaugeLink.click();
 
