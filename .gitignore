@@ -638,4 +638,5 @@ dist
 !/.serena/
 !/.specify/
 !/playwright-report/
+!/specs/
 !/test-results/

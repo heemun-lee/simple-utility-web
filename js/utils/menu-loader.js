@@ -6,6 +6,36 @@
 let cachedMenuData = null;
 
 /**
+ * 현재 페이지의 depth 계산 (프로젝트 root로부터의 깊이)
+ * @returns {number} 페이지 depth
+ */
+function getPageDepth() {
+  const pathname = window.location.pathname;
+  // Remove trailing /index.html or .html
+  const pathWithoutFile = pathname.replace(/\/[^\/]+\.html$/, '');
+  // Split and filter empty parts
+  const parts = pathWithoutFile.split('/').filter(p => p);
+  // If first part is project name (for GitHub Pages), remove it
+  if (parts.length > 0 && parts[0] === 'simple-utility-web') {
+    parts.shift();
+  }
+  return parts.length;
+}
+
+/**
+ * depth에 따라 menu.json 경로 생성
+ * @returns {string} menu.json 경로
+ */
+function getMenuPath() {
+  const depth = getPageDepth();
+  if (depth === 0) {
+    return './data/menu.json';
+  }
+  const prefix = '../'.repeat(depth);
+  return `${prefix}data/menu.json`;
+}
+
+/**
  * 메뉴 데이터 로드
  * @returns {Promise<Object>} 메뉴 데이터
  */
@@ -16,7 +46,8 @@ export async function loadMenuData() {
   }
 
   try {
-    const response = await fetch('./data/menu.json');
+    const menuPath = getMenuPath();
+    const response = await fetch(menuPath);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
