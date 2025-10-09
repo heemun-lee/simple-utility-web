@@ -1,0 +1,306 @@
+/**
+ * Knitting Tools Theme
+ * 뜨개질 도구 공통 테마
+ *
+ * 게이지 변환기와 뜨개질 계산기의 공통 스타일
+ */
+
+/* ============================================================================
+   Container & Layout
+   ========================================================================== */
+
+.tool-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* ============================================================================
+   Intro Text Section
+   ========================================================================== */
+
+.intro-text {
+  color: var(--color-text-light);
+  background: var(--color-primary);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+/* ============================================================================
+   Tool Section (Common section styling)
+   ========================================================================== */
+
+.tool-section,
+.gauge-section,
+.input-section {
+  background: var(--color-primary);
+  border-left: 4px solid var(--color-primary-dark);
+  border-radius: 8px;
+  padding: var(--spacing-lg, 1.5rem);
+  margin-bottom: var(--spacing-lg, 1.5rem);
+}
+
+.tool-section h2,
+.gauge-section h2,
+.input-section h2 {
+  color: var(--color-text);
+  margin-bottom: var(--spacing-md, 1rem);
+  font-size: var(--font-size-h2, 24px);
+}
+
+/* ============================================================================
+   Input Styling
+   ========================================================================== */
+
+.input-group,
+.gauge-input-group {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-md, 1rem);
+  margin-bottom: var(--spacing-md, 1rem);
+}
+
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs, 0.25rem);
+}
+
+.input-wrapper label {
+  margin-bottom: var(--spacing-xs, 0.25rem);
+  font-weight: 500;
+  color: var(--color-text);
+  font-size: var(--font-size-small, 14px);
+}
+
+.input-wrapper input[type="text"],
+.input-wrapper input[type="number"] {
+  width: 100%;
+  padding: var(--spacing-sm, 0.5rem) var(--spacing-md, 1rem);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  transition: border-color var(--transition);
+  background-color: var(--bg-color);
+  font-size: var(--font-size-base);
+  min-height: 44px;
+}
+
+.input-wrapper input[type="text"]:focus,
+.input-wrapper input[type="number"]:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(194, 24, 91, 0.1);
+}
+
+.input-help {
+  font-size: var(--font-size-small, 14px);
+  color: var(--color-text-light);
+  font-style: italic;
+}
+
+/* ============================================================================
+   Button Styling
+   ========================================================================== */
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md, 1rem);
+  margin-top: var(--spacing-md, 1rem);
+}
+
+.calculate-button,
+.btn-primary {
+  width: 100%;
+  padding: var(--spacing-md, 1rem);
+  font-size: var(--font-size-large, 18px);
+  font-weight: 600;
+  background-color: var(--color-primary-dark);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all var(--transition);
+  min-height: 44px;
+}
+
+.calculate-button:hover,
+.btn-primary:hover {
+  background-color: var(--primary-dark, #AD1457);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(194, 24, 91, 0.3);
+}
+
+.calculate-button:active,
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(194, 24, 91, 0.3);
+}
+
+.btn-secondary {
+  width: 100%;
+  padding: var(--spacing-md, 1rem);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  background-color: var(--secondary-color, #6c757d);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all var(--transition);
+  min-height: 44px;
+}
+
+.btn-secondary:hover {
+  background-color: #545b62;
+  transform: translateY(-1px);
+}
+
+.btn-secondary:active {
+  transform: translateY(0);
+}
+
+/* ============================================================================
+   Result Section
+   ========================================================================== */
+
+.result-section {
+  background: var(--color-primary);
+  border: 2px solid var(--color-primary-dark);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-top: 2rem;
+}
+
+.result-section h2 {
+  color: var(--color-text);
+  margin-bottom: var(--spacing-md, 1rem);
+  font-size: var(--font-size-h2, 24px);
+}
+
+.result-display {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm, 0.5rem);
+}
+
+.result-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm, 0.5rem) var(--spacing-md, 1rem);
+  background: white;
+  border-radius: var(--border-radius, 8px);
+  border: 1px solid var(--color-primary-accent);
+}
+
+.result-label {
+  font-weight: 500;
+  color: var(--color-text-light);
+}
+
+.result-value {
+  color: var(--color-primary-dark);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+/* ============================================================================
+   Error Messages
+   ========================================================================== */
+
+.error-message {
+  font-size: var(--font-size-small, 14px);
+  color: var(--error-color, #dc3545);
+  font-weight: 500;
+  display: none;
+  padding: var(--spacing-xs, 0.25rem) 0;
+}
+
+.error-message:not(:empty) {
+  display: block;
+}
+
+#error-container {
+  background-color: var(--color-error);
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: var(--border-radius);
+  padding: var(--spacing-sm, 0.5rem) var(--spacing-md, 1rem);
+  margin-bottom: var(--spacing-md, 1rem);
+  display: none;
+}
+
+#error-container:not(:empty) {
+  display: block;
+}
+
+/* ============================================================================
+   Responsive Design - Tablet (768px+)
+   ========================================================================== */
+
+@media (min-width: 768px) {
+  .input-group,
+  .gauge-input-group {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .button-group {
+    flex-direction: row;
+    justify-content: flex-start;
+  }
+
+  .calculate-button,
+  .btn-primary,
+  .btn-secondary {
+    width: auto;
+    min-width: 150px;
+  }
+}
+
+/* ============================================================================
+   Responsive Design - Mobile (max-width: 767px)
+   ========================================================================== */
+
+@media (max-width: 767px) {
+  .tool-container {
+    padding: 1rem;
+  }
+
+  .result-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs, 0.25rem);
+  }
+
+  .result-value {
+    font-size: var(--font-size-large, 18px);
+  }
+}
+
+/* ============================================================================
+   Accessibility
+   ========================================================================== */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Focus visible for keyboard navigation */
+.calculate-button:focus-visible,
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible,
+.input-wrapper input:focus-visible {
+  outline: 3px solid var(--color-primary-dark);
+  outline-offset: 2px;
+}

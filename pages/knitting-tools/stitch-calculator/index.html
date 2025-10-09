@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="뜨개질 코수 증감을 균등하게 분배하여 각 단의 코수를 계산합니다">
+  <title>뜨개질 계산기 - Simple Utility Web</title>
+
+  <!-- CSS -->
+  <link rel="preload" href="../../../css/main.css" as="style">
+  <link rel="preload" href="../../../css/components.css" as="style">
+  <link rel="stylesheet" href="../../../css/main.css">
+  <link rel="stylesheet" href="../../../css/components.css">
+  <link rel="stylesheet" href="../../../css/theme.css">
+  <link rel="stylesheet" href="../../../css/knitting-tools/stitch-calculator/stitch-calculator.css">
+</head>
+<body>
+  <!-- Navigation (will be injected) -->
+  <div id="nav-container"></div>
+
+  <!-- Main Content -->
+  <main id="main-content" role="main">
+    <article class="stitch-calculator tool-container">
+      <h1>뜨개질 계산기</h1>
+
+      <p class="intro-text">
+        코수를 늘리거나 줄일 때 각 단마다 필요한 코수를 자동으로 계산합니다.
+        코수가 변경되는 단은 하이라이트 표시됩니다.
+      </p>
+
+      <!-- Input Form -->
+      <form id="calculator-form" class="calculator-form" aria-label="뜨개질 계산기 입력 폼">
+        <div id="error-container" role="alert" aria-live="assertive" aria-atomic="true"></div>
+
+        <!-- Input Fields -->
+        <section class="input-section">
+          <h2>코수 정보 입력</h2>
+
+          <div class="input-group">
+            <div class="input-wrapper">
+              <label for="start-stitches">시작 코수</label>
+              <input
+                type="number"
+                id="start-stitches"
+                name="start-stitches"
+                placeholder="예: 10"
+                min="1"
+                max="10000"
+                required
+                aria-required="true"
+                aria-describedby="start-stitches-help"
+              />
+              <span id="start-stitches-help" class="input-help">1~10000 사이의 정수를 입력하세요</span>
+              <span class="error-message" data-field="start-stitches" role="alert"></span>
+            </div>
+
+            <div class="input-wrapper">
+              <label for="target-stitches">목표 코수</label>
+              <input
+                type="number"
+                id="target-stitches"
+                name="target-stitches"
+                placeholder="예: 5"
+                min="1"
+                max="10000"
+                required
+                aria-required="true"
+                aria-describedby="target-stitches-help"
+              />
+              <span id="target-stitches-help" class="input-help">1~10000 사이의 정수를 입력하세요</span>
+              <span class="error-message" data-field="target-stitches" role="alert"></span>
+            </div>
+
+            <div class="input-wrapper">
+              <label for="total-rows">총 단수</label>
+              <input
+                type="number"
+                id="total-rows"
+                name="total-rows"
+                placeholder="예: 20"
+                min="1"
+                max="10000"
+                required
+                aria-required="true"
+                aria-describedby="total-rows-help"
+              />
+              <span id="total-rows-help" class="input-help">1~10000 사이의 정수를 입력하세요</span>
+              <span class="error-message" data-field="total-rows" role="alert"></span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Action Buttons -->
+        <div class="button-group">
+          <button type="submit" id="calculate-button" class="btn btn-primary" aria-label="코수 계산하기">
+            계산하기
+          </button>
+          <button type="reset" id="reset-button" class="btn btn-secondary" aria-label="입력 내용 초기화">
+            초기화
+          </button>
+        </div>
+      </form>
+
+      <!-- Results Section -->
+      <section
+        id="results-container"
+        class="results-section result-section"
+        role="region"
+        aria-live="polite"
+        aria-label="계산 결과"
+        style="display: none;"
+      >
+        <h2>계산 결과</h2>
+
+        <div class="results-summary">
+          <div class="summary-item">
+            <span class="summary-label">시작 코수:</span>
+            <span id="summary-start" class="summary-value"></span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">목표 코수:</span>
+            <span id="summary-target" class="summary-value"></span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">총 단수:</span>
+            <span id="summary-rows" class="summary-value"></span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">변경 단수:</span>
+            <span id="summary-changed" class="summary-value"></span>
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <!-- Results table will be inserted here dynamically -->
+        </div>
+
+        <p class="results-note">
+          * 배경색이 강조된 단에서 코수가 변경됩니다.
+        </p>
+      </section>
+    </article>
+  </main>
+
+  <!-- Footer (will be injected) -->
+  <div id="footer-container"></div>
+
+  <!-- Component Loading Scripts -->
+  <script type="module">
+    import { renderNavigation, initMobileMenu } from '../../../js/components/nav.js';
+    import { renderFooter } from '../../../js/components/footer.js';
+    import { showError } from '../../../js/components/error.js';
+
+    // Load navigation
+    async function loadNav() {
+      try {
+        const navHtml = await renderNavigation('stitch-calculator');
+        document.getElementById('nav-container').innerHTML = navHtml;
+        initMobileMenu();
+      } catch (error) {
+        console.error('Navigation load failed:', error);
+        showError({
+          type: 'error',
+          message: '네비게이션을 불러올 수 없습니다.'
+        });
+      }
+    }
+
+    // Load footer
+    function loadFooter() {
+      try {
+        const footerHtml = renderFooter();
+        document.getElementById('footer-container').innerHTML = footerHtml;
+      } catch (error) {
+        console.error('Footer load failed:', error);
+      }
+    }
+
+    // Initialize page
+    loadNav();
+    loadFooter();
+  </script>
+
+  <!-- Stitch Calculator Logic -->
+  <script type="module">
+    import { initCalculator } from '../../../js/knitting-tools/stitch-calculator/stitch-calculator.js';
+
+    // Initialize calculator when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initCalculator);
+    } else {
+      initCalculator();
+    }
+  </script>
+</body>
+</html>

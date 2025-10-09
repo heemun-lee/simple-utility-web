@@ -1,47 +1,33 @@
-/* ===== Gauge Converter Styles ===== */
+/**
+ * Gauge Converter Specific Styles
+ * 게이지 변환기 전용 스타일
+ *
+ * 공통 스타일은 theme.css에 정의됨
+ */
+
+/* ============================================================================
+   Page-Specific Container
+   ========================================================================== */
 
 .gauge-converter {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 2rem;
+  /* Uses .tool-container from theme.css */
 }
 
-.intro-text {
-  color: var(--color-text-light);
-  background: var(--color-primary);
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 2rem;
-}
+/* ============================================================================
+   Unit Selection (Radio Buttons)
+   ========================================================================== */
 
-.result-section {
-  background: var(--color-primary);
-  border: 2px solid var(--color-primary-dark);
-  border-radius: 12px;
-  padding: 2rem;
-  margin-top: 2rem;
-}
-
-.result-value {
-  color: var(--color-primary-dark);
-  font-size: 1.5rem;
-  font-weight: 700;
-}
-
-/* Unit selection fieldset */
 .unit-selection {
   border: none;
   padding: 0;
   margin: 0;
 }
 
-/* Radio group layout */
 .radio-group {
   display: flex;
   gap: var(--spacing-md, 1rem);
 }
 
-/* Radio button styles */
 .radio-label {
   background: var(--color-background-secondary);
   border: 2px solid transparent;
@@ -73,80 +59,24 @@
   cursor: pointer;
 }
 
-.gauge-section {
-  background: var(--color-primary);
-  border-left: 4px solid var(--color-primary-dark);
-  border-radius: 8px;
-  padding: var(--spacing-lg, 1.5rem);
-  margin-bottom: var(--spacing-lg, 1.5rem);
-}
+/* ============================================================================
+   Gauge-Specific Section
+   ========================================================================== */
 
-.gauge-section h2 {
-  color: var(--color-text);
-  margin-bottom: var(--spacing-md, 1rem);
-  font-size: var(--font-size-h2, 24px);
+.gauge-section {
+  /* Inherits from .tool-section in theme.css */
 }
 
 .gauge-input-group {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--spacing-md, 1rem);
-  margin-bottom: var(--spacing-md, 1rem);
+  /* Uses .input-group from theme.css with 2-column layout */
 }
 
-.input-wrapper label {
-  margin-bottom: var(--spacing-xs, 0.25rem);
-  font-weight: 500;
-  color: var(--color-text);
-  font-size: var(--font-size-small, 14px);
-}
+/* ============================================================================
+   Mobile Responsive
+   ========================================================================== */
 
-.calculate-button {
-  width: 100%;
-  padding: var(--spacing-md, 1rem);
-  font-size: var(--font-size-large, 18px);
-  font-weight: 600;
-  margin-top: var(--spacing-md, 1rem);
-}
-
-.result-display {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm, 0.5rem);
-}
-
-.result-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--spacing-sm, 0.5rem) var(--spacing-md, 1rem);
-  background: white;
-  border-radius: var(--border-radius, 8px);
-  border: 1px solid var(--color-primary-accent);
-}
-
-.result-label {
-  font-weight: 500;
-  color: var(--color-text-light);
-}
-
-/* Mobile Styles */
 @media (max-width: 767px) {
-  .gauge-input-group {
-    grid-template-columns: 1fr;
-  }
-
   .radio-group {
     flex-direction: column;
-  }
-
-  .result-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--spacing-xs, 0.25rem);
-  }
-
-  .result-value {
-    font-size: var(--font-size-large, 18px);
   }
 }

@@ -16,6 +16,14 @@
       "category": "converter",
       "order": 10,
       "icon": "🔧"
+    },
+    {
+      "id": "stitch-calculator",
+      "label": "뜨개질 계산기",
+      "path": "./pages/knitting-tools/stitch-calculator/index.html",
+      "category": "calculator",
+      "order": 20,
+      "icon": "🧶"
     }
   ],
   "categories": [
