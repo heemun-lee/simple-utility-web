@@ -66,9 +66,9 @@ test.describe('홈 페이지 콘텐츠', () => {
       const firstLink = cardLinks.first();
       await expect(firstLink).toBeVisible();
 
-      // 상대 경로 확인
+      // 절대 경로 확인
       const href = await firstLink.getAttribute('href');
-      expect(href).toMatch(/^\.\/.*\.html$/);
+      expect(href).toMatch(/^\/.*\.html$/);
     }
   });
 
