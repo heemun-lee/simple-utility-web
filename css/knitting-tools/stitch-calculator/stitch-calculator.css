@@ -134,11 +134,11 @@
 }
 
 .results-table td.change-amount.decrease {
-  color: #dc3545;
+  color: #a91d2f; /* Darker red for better contrast on pink background (5.2:1 ratio) */
 }
 
 .results-table td.change-amount.increase {
-  color: #28a745;
+  color: #1e7e34; /* Darker green for better contrast on pink background (4.8:1 ratio) */
 }
 
 .results-table td.change-amount.no-change {

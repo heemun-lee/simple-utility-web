@@ -5,6 +5,8 @@ Auto-generated from all feature plans. Last updated: 2025-10-08
 ## Active Technologies
 - HTML5, CSS3, JavaScript ES6+ (현대 브라우저 표준) + 없음 (Vanilla JavaScript, 제로 디펜던시) (001-3depth-navigate)
 - N/A (정적 사이트, 로컬 스토리지만 사용) (002-spa-to-mpa)
+- JavaScript ES6+ (현대 브라우저 표준 - Chrome, Firefox, Safari, Edge) + 없음 (Vanilla JavaScript, 제로 디펜던시) (003-10-5-20)
+- localStorage (사용자의 최근 입력값 저장 - 선택적 기능) (003-10-5-20)
 
 ## Project Structure
 ```
@@ -19,9 +21,9 @@ npm test [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNO
 HTML5, CSS3, JavaScript ES6+ (현대 브라우저 표준): Follow standard conventions
 
 ## Recent Changes
+- 003-10-5-20: Added JavaScript ES6+ (현대 브라우저 표준 - Chrome, Firefox, Safari, Edge) + 없음 (Vanilla JavaScript, 제로 디펜던시)
 - 002-spa-to-mpa: Added HTML5, CSS3, JavaScript ES6+ (현대 브라우저 표준) + 없음 (Vanilla JavaScript, 제로 디펜던시)
 - 002-spa-to-mpa: Added HTML5, CSS3, JavaScript ES6+ (현대 브라우저 표준) + 없음 (Vanilla JavaScript, 제로 디펜던시)
-- 001-3depth-navigate: Added HTML5, CSS3, JavaScript ES6+ (현대 브라우저 표준) + 없음 (Vanilla JavaScript, 제로 디펜던시)
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->
