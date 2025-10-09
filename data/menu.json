@@ -1,21 +1,38 @@
 {
-  "menu": [
+  "version": "2.0",
+  "items": [
     {
-      "id": "knitting-tools",
-      "title": "편물 도구",
-      "children": [
-        {
-          "id": "gauge-tools",
-          "title": "게이지 관련",
-          "children": [
-            {
-              "id": "gauge-converter",
-              "title": "게이지 변환 계산기",
-              "url": "pages/knitting-tools/gauge-tools/gauge-converter.html"
-            }
-          ]
-        }
-      ]
+      "id": "home",
+      "label": "홈",
+      "path": "/index.html",
+      "category": "main",
+      "order": 1,
+      "icon": "🏠"
+    },
+    {
+      "id": "gauge-converter",
+      "label": "게이지 변환",
+      "path": "/pages/knitting-tools/gauge-tools/index.html",
+      "category": "converter",
+      "order": 10,
+      "icon": "🔧"
+    }
+  ],
+  "categories": [
+    {
+      "id": "main",
+      "label": "메인",
+      "order": 1
+    },
+    {
+      "id": "converter",
+      "label": "변환 도구",
+      "order": 2
+    },
+    {
+      "id": "calculator",
+      "label": "계산 도구",
+      "order": 3
     }
   ]
 }

@@ -124,7 +124,7 @@ export const convertGauge = (input, base, actual) => {
   }
 
   const result = input * (actual / base);
-  return Number(result.toFixed(2));
+  return Math.round(result);
 };
 
 /**
@@ -150,12 +150,12 @@ export const convertGaugeWithUnit = (input, base, actual, unit) => {
     const resultIn10Cm = inputIn10Cm * (actualIn10Cm / baseIn10Cm);
     const resultIn4Inch = convert10CmTo4Inch(resultIn10Cm);
 
-    return Number(resultIn4Inch.toFixed(2));
+    return Math.round(resultIn4Inch);
   }
 
   // 10cm 선택 시: 기존 로직 사용
   const result = input * (actual / base);
-  return Number(result.toFixed(2));
+  return Math.round(result);
 };
 
 /**

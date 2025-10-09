@@ -1,0 +1,122 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://simple-utility-web/schemas/menu-structure.json",
+  "title": "3-Depth Menu Structure",
+  "description": "JSON schema for the hierarchical menu navigation system",
+  "type": "object",
+  "required": ["menu"],
+  "properties": {
+    "menu": {
+      "type": "array",
+      "description": "Top-level menu categories (1st depth)",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/definitions/menuItem"
+      }
+    }
+  },
+  "definitions": {
+    "menuItem": {
+      "type": "object",
+      "required": ["id", "title"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the menu item (kebab-case)",
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+          "minLength": 1,
+          "maxLength": 50,
+          "examples": ["knitting-tools", "gauge-converter"]
+        },
+        "title": {
+          "type": "string",
+          "description": "Display text for the menu item",
+          "minLength": 1,
+          "maxLength": 50,
+          "examples": ["편물 도구", "게이지 변환 계산기"]
+        },
+        "url": {
+          "type": "string",
+          "description": "Page URL (required only for 3rd depth items). Pattern: /pages/{1depth-id}/{2depth-id}/{3depth-id}.html",
+          "pattern": "^/pages/([a-z0-9-]+/){2}[a-z0-9-]+\\.html$",
+          "examples": ["/pages/knitting-tools/gauge-tools/gauge-converter.html", "/pages/converters/unit-converters/cm-to-inch.html"]
+        },
+        "children": {
+          "type": "array",
+          "description": "Nested menu items (max 3 levels total)",
+          "items": {
+            "$ref": "#/definitions/menuItem"
+          }
+        }
+      },
+      "oneOf": [
+        {
+          "description": "1st or 2nd depth: requires children, no url",
+          "required": ["children"],
+          "not": { "required": ["url"] }
+        },
+        {
+          "description": "3rd depth: requires url, no children",
+          "required": ["url"],
+          "not": { "required": ["children"] }
+        }
+      ]
+    }
+  },
+  "examples": [
+    {
+      "menu": [
+        {
+          "id": "knitting-tools",
+          "title": "편물 도구",
+          "children": [
+            {
+              "id": "gauge-tools",
+              "title": "게이지 관련",
+              "children": [
+                {
+                  "id": "gauge-converter",
+                  "title": "게이지 변환 계산기",
+                  "url": "/pages/knitting-tools/gauge-tools/gauge-converter.html"
+                },
+                {
+                  "id": "gauge-calculator",
+                  "title": "게이지 계산기",
+                  "url": "/pages/knitting-tools/gauge-tools/gauge-calculator.html"
+                }
+              ]
+            },
+            {
+              "id": "size-tools",
+              "title": "치수 계산",
+              "children": [
+                {
+                  "id": "size-calculator",
+                  "title": "치수 계산기",
+                  "url": "/pages/knitting-tools/size-tools/size-calculator.html"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "converters",
+          "title": "변환기",
+          "children": [
+            {
+              "id": "unit-converters",
+              "title": "단위 변환",
+              "children": [
+                {
+                  "id": "cm-to-inch",
+                  "title": "cm ↔ inch 변환",
+                  "url": "/pages/converters/unit-converters/cm-to-inch.html"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

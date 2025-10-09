@@ -77,7 +77,13 @@ export const calculate = () => {
 const displayResults = (results, unit) => {
   const resultStitches = $('#result-stitches');
   const resultRows = $('#result-rows');
+  const resultSection = $('#result');
   const unitText = unit === GAUGE_UNITS.INCH ? '4 inch 기준' : '10cm 기준';
+
+  // 결과 섹션 표시
+  if (resultSection) {
+    resultSection.style.display = 'block';
+  }
 
   if (resultStitches) {
     if (results.stitches !== null) {

@@ -1,17 +1,32 @@
 /* ===== Global Styles ===== */
 
 :root {
-  /* Colors */
-  --primary-color: #4a90e2;
-  --secondary-color: #7b68ee;
-  --success-color: #28a745;
-  --error-color: #dc3545;
-  --warning-color: #ffc107;
-  --text-color: #333;
-  --text-light: #666;
-  --bg-color: #ffffff;
-  --bg-light: #f8f9fa;
-  --border-color: #dee2e6;
+  /* Primary Colors - Soft Pastel Pink Theme */
+  --color-primary: #FEEFEF;          /* Main soft pink background */
+  --color-primary-accent: #FFD4D4;   /* Rose pink accent */
+  --color-primary-dark: #C2185B;     /* Deep pink for buttons (WCAG AA 5.89:1) */
+
+  /* Supporting Colors */
+  --color-background: #FFFFFF;
+  --color-background-secondary: #F8F8F8;
+  --color-text: #333333;
+  --color-text-light: #666666;
+  --color-success: #D4F4DD;
+  --color-error: #FFE0E0;
+
+  /* Legacy aliases for backwards compatibility */
+  --primary-color: var(--color-primary-dark);
+  --primary-dark: #AD1457;
+  --secondary-color: #6c757d;
+  --success-color: var(--color-success);
+  --error-color: var(--color-error);
+  --warning-color: #856404;
+  --text-color: var(--color-text);
+  --text-light: var(--color-text-light);
+  --text-muted: #495057;
+  --bg-color: var(--color-background);
+  --bg-light: var(--color-background-secondary);
+  --border-color: var(--color-primary-accent);
 
   /* Typography */
   --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -23,11 +38,11 @@
   --font-size-h3: 20px;
 
   /* Spacing */
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 16px;
-  --spacing-lg: 24px;
-  --spacing-xl: 32px;
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
 
   /* Layout */
   --max-width: 1200px;
