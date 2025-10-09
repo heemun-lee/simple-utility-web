@@ -7,6 +7,13 @@ import { validateAllInputs, convertGauge, convertGaugeWithUnit, GAUGE_UNITS } fr
 import { $, showError } from '../../utils.js';
 
 /**
+ * localStorage 키 상수
+ */
+const STORAGE_KEYS = {
+  GAUGE_CONVERTER_INPUTS: 'gaugeConverterInputs',
+};
+
+/**
  * 현재 선택된 측정 단위
  * @type {string}
  */
@@ -63,6 +70,9 @@ export const calculate = () => {
     // 결과 표시 (단위 포함)
     displayResults(results, currentUnit);
     clearError();
+
+    // localStorage에 입력값 저장
+    saveInput(inputs, currentUnit);
   } catch (error) {
     displayError([error.message]);
     clearResults();
@@ -215,6 +225,17 @@ export const handleUnitChange = (event) => {
   updateLabels(currentUnit);
   clearResults();
   clearError();
+
+  // 현재 입력값과 함께 단위 저장
+  const inputs = {
+    baseStitches: $('#base-stitches')?.value || '',
+    baseRows: $('#base-rows')?.value || '',
+    actualStitches: $('#actual-stitches')?.value || '',
+    actualRows: $('#actual-rows')?.value || '',
+    inputStitches: $('#input-stitches')?.value || '',
+    inputRows: $('#input-rows')?.value || '',
+  };
+  saveInput(inputs, currentUnit);
 };
 
 /**
@@ -222,3 +243,67 @@ export const handleUnitChange = (event) => {
  * @returns {string} 현재 측정 단위
  */
 export const getCurrentUnit = () => currentUnit;
+
+/* ============================================================================
+   LocalStorage Functions
+   ========================================================================== */
+
+/**
+ * localStorage에 입력값 저장
+ * @param {Object} inputs - 저장할 입력값
+ * @param {string} unit - 측정 단위
+ * @returns {boolean} 저장 성공 여부
+ */
+const saveInput = (inputs, unit) => {
+  try {
+    const data = {
+      baseStitches: inputs.baseStitches,
+      baseRows: inputs.baseRows,
+      actualStitches: inputs.actualStitches,
+      actualRows: inputs.actualRows,
+      inputStitches: inputs.inputStitches,
+      inputRows: inputs.inputRows,
+      unit: unit,
+      timestamp: Date.now(),
+    };
+    localStorage.setItem(STORAGE_KEYS.GAUGE_CONVERTER_INPUTS, JSON.stringify(data));
+    return true;
+  } catch (error) {
+    console.warn('Failed to save input to localStorage:', error);
+    return false;
+  }
+};
+
+/**
+ * localStorage에서 입력값 복원
+ * @returns {Object|null} 복원된 입력값과 단위
+ */
+export const restoreInput = () => {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEYS.GAUGE_CONVERTER_INPUTS);
+    if (!saved) return null;
+
+    const data = JSON.parse(saved);
+
+    return {
+      baseStitches: data.baseStitches || '',
+      baseRows: data.baseRows || '',
+      actualStitches: data.actualStitches || '',
+      actualRows: data.actualRows || '',
+      inputStitches: data.inputStitches || '',
+      inputRows: data.inputRows || '',
+      unit: data.unit || GAUGE_UNITS.CM,
+    };
+  } catch (error) {
+    console.warn('Failed to restore input from localStorage:', error);
+    return null;
+  }
+};
+
+/**
+ * 저장된 단위로 currentUnit 업데이트
+ * @param {string} unit - 복원된 단위
+ */
+export const setCurrentUnit = (unit) => {
+  currentUnit = unit;
+};

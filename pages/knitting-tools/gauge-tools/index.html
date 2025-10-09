@@ -224,7 +224,28 @@
 
   <!-- Gauge Converter Logic -->
   <script type="module">
-    import { calculate, handleUnitChange } from '../../../js/knitting-tools/gauge-tools/gauge-converter.js';
+    import { calculate, handleUnitChange, restoreInput, updateLabels, setCurrentUnit } from '../../../js/knitting-tools/gauge-tools/gauge-converter.js';
+
+    // localStorage에서 이전 입력값 복원
+    const savedInput = restoreInput();
+    if (savedInput) {
+      document.getElementById('base-stitches').value = savedInput.baseStitches;
+      document.getElementById('base-rows').value = savedInput.baseRows;
+      document.getElementById('actual-stitches').value = savedInput.actualStitches;
+      document.getElementById('actual-rows').value = savedInput.actualRows;
+      document.getElementById('input-stitches').value = savedInput.inputStitches;
+      document.getElementById('input-rows').value = savedInput.inputRows;
+
+      // 저장된 측정 단위 복원
+      const unitRadio = document.getElementById(savedInput.unit === '4inch' ? 'unit-4inch' : 'unit-10cm');
+      if (unitRadio) {
+        unitRadio.checked = true;
+        // currentUnit 업데이트
+        setCurrentUnit(savedInput.unit);
+        // 레이블 업데이트
+        updateLabels(savedInput.unit);
+      }
+    }
 
     // 계산 버튼 클릭 이벤트
     const calculateButton = document.getElementById('calculate');
