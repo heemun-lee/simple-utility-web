@@ -633,10 +633,10 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-!/.claude/
-!/.playwright-mcp/
-!/.serena/
-!/.specify/
-!/playwright-report/
-!/specs/
-!/test-results/
+.claude/
+.playwright-mcp/
+.serena/
+.specify/
+playwright-report/
+specs/
+test-results/
