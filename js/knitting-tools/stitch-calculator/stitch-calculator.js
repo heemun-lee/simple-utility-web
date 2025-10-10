@@ -128,18 +128,21 @@ function validateInput(input) {
 
 /**
  * 코수 분배 계산 알고리즘
- * 균등 분배를 사용하여 각 단의 코수를 계산합니다.
+ * 두 가지 분배 방식을 지원합니다:
+ * 1. 균등 간격 (even): 모든 변화 간격이 동일 (기본값, 뜨개질 패턴 외우기 쉬움)
+ * 2. 최적 분배 (optimal): 수학적으로 최적화된 분배 (마지막 단까지 정확하게 도달)
  *
  * @param {Object} input - 계산 입력
  * @param {number} input.startStitches - 시작 코수
  * @param {number} input.targetStitches - 목표 코수
  * @param {number} input.totalRows - 총 단수
+ * @param {string} [input.distributionMode='even'] - 분배 방식 ('even' 또는 'optimal')
  * @returns {Object} 계산 결과
  */
 function calculateStitchDistribution(input) {
   const startTime = performance.now();
 
-  const { startStitches, targetStitches, totalRows } = input;
+  const { startStitches, targetStitches, totalRows, distributionMode = 'even' } = input;
 
   // Calculate total change
   const totalChange = targetStitches - startStitches;
@@ -160,47 +163,129 @@ function calculateStitchDistribution(input) {
       totalChange: 0,
       changeType: 'none',
       changedRowsCount: 0,
+      distributionMode,
       calculationTime: performance.now() - startTime,
     };
   }
 
-  // Calculate distribution using cumulative method for even spacing
-  // This ensures changes are distributed evenly across all rows
-  const rows = [];
-  let currentStitches = startStitches;
-  let totalAppliedChange = 0;
-  let changedRowsCount = 0;
-
-  // Use absolute value for calculation, then apply sign
   const absChange = Math.abs(totalChange);
   const sign = totalChange > 0 ? 1 : -1;
 
-  for (let i = 0; i < totalRows; i++) {
-    const rowNumber = i + 1;
+  // Generate results for each row
+  const rows = [];
+  let currentStitches = startStitches;
+  let changedRowsCount = 0;
 
-    // Calculate expected cumulative change using floor for even distribution
-    // Example: 5 changes over 20 rows -> changes at rows 4, 8, 12, 16, 20
-    const expectedAbsChange = Math.floor((rowNumber * absChange) / totalRows);
-    const expectedCumulativeChange = expectedAbsChange * sign;
+  if (distributionMode === 'even') {
+    // 균등 간격 방식: 모든 간격이 동일
+    // 한 단당 기본 변화량 계산
+    const baseChangePerRow = Math.floor(absChange / totalRows);
 
-    // Calculate change for this specific row
-    const changeAmount = expectedCumulativeChange - totalAppliedChange;
+    if (baseChangePerRow === 0) {
+      // 케이스 1: 총 변화량 <= 총 단수 (한 단에 최대 1코 변화)
+      // 최대 간격 계산: k = floor((총단수 - 1) / (변화횟수 - 1))
+      // 필요 단수 = 1 + (변화횟수 - 1) × 간격
+      // 예: 40단에 14코 변화 → 간격 3 → 1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40
+      // 예: 45단에 14코 변화 → 간격 3 → 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42
+      const maxInterval = Math.floor((totalRows - 1) / (absChange - 1));
+      const changeRows = new Set();
 
-    // Update current stitches
-    currentStitches = currentStitches + changeAmount;
-    totalAppliedChange += changeAmount;
+      // 필요한 최소 단수 계산
+      const requiredRows = 1 + (absChange - 1) * maxInterval;
 
-    // Track if this row has a change
-    if (changeAmount !== 0) {
-      changedRowsCount++;
+      // 여유 공간 = 총 단수 - 필요 단수
+      // 앞뒤로 균등하게 분배
+      const remainingRows = totalRows - requiredRows;
+      const startOffset = Math.floor(remainingRows / 2);
+
+      // 첫 변화 위치
+      let position = startOffset + 1;
+
+      for (let i = 0; i < absChange; i++) {
+        changeRows.add(position);
+        position += maxInterval;
+      }
+
+      for (let rowNumber = 1; rowNumber <= totalRows; rowNumber++) {
+        const hasChange = changeRows.has(rowNumber);
+        const changeAmount = hasChange ? sign : 0;
+
+        currentStitches += changeAmount;
+
+        if (hasChange) {
+          changedRowsCount++;
+        }
+
+        rows.push({
+          rowNumber,
+          stitches: currentStitches,
+          isChanged: hasChange,
+          changeAmount,
+        });
+      }
+    } else {
+      // 케이스 2: 총 변화량 > 총 단수 (한 단에 여러 코 변화)
+      // 모든 단에 기본 변화 + 일부 단에 추가 변화
+      // 예: 7단에 14코 변화 → 모든 단 2코 (14/7=2, 나머지 0)
+      // 예: 5단에 12코 변화 → 3단은 3코, 2단은 2코 (12/5=2, 나머지 2)
+      const extraChanges = absChange % totalRows;
+      const extraChangeRows = new Set();
+
+      if (extraChanges > 0) {
+        // 추가 변화를 균등 간격으로 배치
+        const extraInterval = Math.floor(totalRows / extraChanges);
+        let position = extraInterval;
+
+        for (let i = 0; i < extraChanges; i++) {
+          extraChangeRows.add(Math.min(position, totalRows));
+          position += extraInterval;
+        }
+      }
+
+      for (let rowNumber = 1; rowNumber <= totalRows; rowNumber++) {
+        const hasExtraChange = extraChangeRows.has(rowNumber);
+        const changeAmount = sign * (baseChangePerRow + (hasExtraChange ? 1 : 0));
+
+        currentStitches += changeAmount;
+        changedRowsCount++;
+
+        rows.push({
+          rowNumber,
+          stitches: currentStitches,
+          isChanged: true,
+          changeAmount,
+        });
+      }
+    }
+  } else {
+    // 최적 분배 방식: 수학적으로 균등하게 분배하여 마지막 단까지 정확하게 도달
+    // 각 변화를 이상적 위치에 배치 (항상 1코씩만 변화)
+    // 예: 45단에 14코 변화 → 3, 6, 10, 13, 16, 19, 23, 26, 29, 32, 35, 39, 42, 45
+    const changeRows = new Set();
+
+    for (let i = 1; i <= absChange; i++) {
+      const idealRow = (i * totalRows) / absChange;
+      const actualRow = Math.round(idealRow);
+      changeRows.add(actualRow);
     }
 
-    rows.push({
-      rowNumber,
-      stitches: currentStitches,
-      isChanged: changeAmount !== 0,
-      changeAmount,
-    });
+    for (let rowNumber = 1; rowNumber <= totalRows; rowNumber++) {
+      const hasChange = changeRows.has(rowNumber);
+      const changeAmount = hasChange ? sign : 0;
+
+      currentStitches += changeAmount;
+
+      if (hasChange) {
+        changedRowsCount++;
+      }
+
+      rows.push({
+        rowNumber,
+        stitches: currentStitches,
+        isChanged: hasChange,
+        changeAmount,
+      });
+    }
   }
 
   const calculationTime = performance.now() - startTime;
@@ -211,6 +296,7 @@ function calculateStitchDistribution(input) {
     totalChange,
     changeType,
     changedRowsCount,
+    distributionMode,
     calculationTime,
   };
 }
