@@ -43,7 +43,6 @@
 /* 메인 콘텐츠 영역 */
 .main-content {
     min-height: calc(100vh - 200px);
-    padding: 2rem 1rem;
 }
 
 /* 푸터 스타일 */
@@ -67,9 +66,5 @@
 
     .header-container {
         padding: 0.5rem 0.75rem;
-    }
-
-    .main-content {
-        padding: 1rem 0.5rem;
     }
 }
