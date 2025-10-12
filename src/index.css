@@ -1,0 +1,77 @@
+/* 벚꽃 테마 - 라이트 모드 고정 */
+:root {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    font-weight: 400;
+
+    /* 다크모드 비활성화 */
+    color-scheme: light only;
+
+    /* 벚꽃 색상 팔레트 */
+    --cherry-blossom: #FFB7C5;
+    --cherry-blossom-light: #FFD4DC;
+    --cherry-blossom-dark: #FF9AB0;
+    --cherry-blossom-muted: #FFF0F3;
+
+    /* 기본 색상 */
+    color: #333;
+    background-color: #ffffff;
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* 다크모드 강제 비활성화 */
+body {
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+    background-color: #ffffff !important;
+    color: #333 !important;
+}
+
+/* UIKit 벚꽃 색상 오버라이드 */
+.uk-button-primary {
+    background-color: var(--cherry-blossom) !important;
+    color: white !important;
+    border: none !important;
+}
+
+.uk-button-primary:hover {
+    background-color: var(--cherry-blossom-dark) !important;
+}
+
+.uk-card-primary {
+    background-color: var(--cherry-blossom) !important;
+    color: white !important;
+}
+
+.uk-label-primary {
+    background-color: var(--cherry-blossom) !important;
+}
+
+.uk-badge {
+    background-color: var(--cherry-blossom-light) !important;
+    color: #333 !important;
+}
+
+.uk-text-primary {
+    color: var(--cherry-blossom) !important;
+}
+
+.uk-section-muted {
+    background-color: var(--cherry-blossom-muted) !important;
+}
+
+.uk-alert-primary {
+    background-color: var(--cherry-blossom-muted) !important;
+    color: #333 !important;
+    border-left: 4px solid var(--cherry-blossom) !important;
+}
+
+.uk-row-highlight {
+    background-color: var(--cherry-blossom-muted) !important;
+    color: var(--cherry-blossom) !important;
+}

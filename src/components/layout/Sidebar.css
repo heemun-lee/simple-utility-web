@@ -1,0 +1,139 @@
+/* 벚꽃 테마 사이드바 스타일 */
+
+/* Offcanvas z-index 수정 */
+.sidebar-offcanvas.uk-offcanvas {
+    z-index: 1050 !important;
+}
+
+.sidebar-offcanvas .uk-offcanvas-overlay {
+    z-index: 1049 !important;
+}
+
+/* 사이드바 배경 */
+.sidebar-offcanvas .uk-offcanvas-bar {
+    background: linear-gradient(135deg, var(--cherry-blossom-muted) 0%, #ffffff 100%);
+    border-right: 3px solid var(--cherry-blossom-light);
+    z-index: 1050 !important;
+}
+
+/* 사이드바 헤더 */
+.sidebar-header {
+    padding: 1.5rem 1rem;
+    border-bottom: 2px solid var(--cherry-blossom-light);
+    background-color: var(--cherry-blossom-muted);
+}
+
+.sidebar-header h3 {
+    color: var(--cherry-blossom-dark);
+    margin: 0;
+    font-weight: 700;
+}
+
+.sidebar-header .uk-text-meta {
+    color: var(--cherry-blossom);
+}
+
+/* 네비게이션 스타일 */
+.sidebar-nav {
+    padding: 1rem 0;
+}
+
+.sidebar-nav .uk-nav > li > a {
+    color: #333 !important;
+    border-radius: 8px;
+    margin: 0.25rem 1rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.sidebar-nav .uk-nav > li > a:hover {
+    background-color: var(--cherry-blossom-light) !important;
+    color: var(--cherry-blossom-dark) !important;
+    transform: translateX(5px);
+}
+
+.sidebar-nav .uk-nav > li.uk-active > a {
+    background-color: var(--cherry-blossom) !important;
+    color: var(--cherry-blossom-dark) !important;
+    font-weight: 600;
+}
+
+/* 부모 메뉴 (드롭다운) */
+.sidebar-nav .uk-nav .uk-parent > a {
+    font-weight: 600;
+}
+
+/* 서브 메뉴 스타일 */
+.sidebar-nav .uk-nav-sub {
+    padding-left: 1rem;
+    margin-top: 0.5rem;
+}
+
+.sidebar-nav .uk-nav-sub li a {
+    padding: 0.5rem 1rem 0.5rem 2.5rem;
+    color: #666 !important;
+    font-size: 0.9rem;
+}
+
+.sidebar-nav .uk-nav-sub li a:hover {
+    background-color: var(--cherry-blossom-muted) !important;
+    color: var(--cherry-blossom-dark) !important;
+}
+
+/* 구분선 */
+.sidebar-nav .uk-nav-divider {
+    border-top: 1px solid var(--cherry-blossom-light);
+    margin: 0.5rem 1rem;
+}
+
+/* 헤더 스타일 */
+.sidebar-nav .uk-nav-header {
+    color: #333 !important;
+    font-weight: 700;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* 아이콘 스타일 */
+.sidebar-nav .uk-nav svg {
+    color: var(--cherry-blossom) !important;
+}
+
+.sidebar-nav .uk-nav > li.uk-active svg {
+    color: var(--cherry-blossom-dark) !important;
+}
+
+/* 닫기 버튼 스타일 */
+.sidebar-close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    color: var(--cherry-blossom-dark) !important;
+    border-radius: 50% !important;
+    width: 40px !important;
+    height: 40px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    border: 2px solid var(--cherry-blossom-light);
+    transition: all 0.3s ease;
+    z-index: 1051;
+    cursor: pointer;
+}
+
+.sidebar-close-btn:hover {
+    background-color: var(--cherry-blossom) !important;
+    color: white !important;
+    transform: rotate(90deg) scale(1.1);
+    box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);
+}
+
+/* 오버레이 스타일 */
+.uk-offcanvas-overlay {
+    background-color: rgba(255, 183, 197, 0.3);
+}
