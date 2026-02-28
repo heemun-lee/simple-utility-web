@@ -1,8 +1,9 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { loadImage, resizeImage, calculateHeight, createPixelGrid, drawPreview } from '../../../utils/imageProcessor.js';
+import { loadImage, cropImage, resizeImage, calculateHeight, createPixelGrid, drawPreview } from '../../../utils/imageProcessor.js';
 import { quantizeColors } from '../../../utils/colorQuantization.js';
 import { exportToExcel, exportToPdf } from '../../../utils/exportUtils.js';
 import { FILTERS, applyFilter } from '../../../utils/imageFilters.js';
+import ImageCropper from '../../../components/ImageCropper.jsx';
 
 /**
  * 커스텀 팔레트로 픽셀 그리드를 다시 매핑
@@ -79,6 +80,7 @@ function PatternGenerator() {
     const [genWidth, setGenWidth] = useState(0);
     const [genHeight, setGenHeight] = useState(0);
     const [selectedFilter, setSelectedFilter] = useState('none');
+    const [cropRect, setCropRect] = useState({ top: 0, bottom: 0, left: 0, right: 0 });
 
     const imgRef = useRef(null);
     const canvasRef = useRef(null);
@@ -109,6 +111,7 @@ function PatternGenerator() {
         setPalette(null);
         setImageLoaded(false);
         setSelectedFilter('none');
+        setCropRect({ top: 0, bottom: 0, left: 0, right: 0 });
 
         const reader = new FileReader();
         reader.onload = (ev) => setImagePreview(ev.target.result);
@@ -134,14 +137,29 @@ function PatternGenerator() {
         const newWidth = parseInt(val) || 0;
         setWidth(val === '' ? '' : newWidth);
         if (imgRef.current && newWidth > 0) {
-            setHeight(calculateHeight(imgRef.current, newWidth));
+            // 크롭 적용된 비율로 세로 계산
+            const cropW = imgRef.current.width * (1 - cropRect.left - cropRect.right);
+            const cropH = imgRef.current.height * (1 - cropRect.top - cropRect.bottom);
+            const ratio = cropH / cropW;
+            setHeight(Math.round(newWidth * ratio));
         }
-    }, []);
+    }, [cropRect]);
 
     // ── 색상 수 변경 (생성은 하지 않음) ──
     const handleColorCountChange = useCallback((e) => {
         const val = e.target.value;
         setColorCount(val === '' ? '' : (parseInt(val) || 0));
+    }, []);
+
+    // ── 크롭 변경 → 기본값 업데이트 ──
+    const handleCropChange = useCallback((newCrop) => {
+        setCropRect(newCrop);
+        if (imgRef.current) {
+            const cropW = Math.round(imgRef.current.width * (1 - newCrop.left - newCrop.right));
+            const cropH = Math.round(imgRef.current.height * (1 - newCrop.top - newCrop.bottom));
+            setWidth(cropW);
+            setHeight(cropH);
+        }
     }, []);
 
     // ── [도안 생성] 버튼 클릭 ──
@@ -154,7 +172,12 @@ function PatternGenerator() {
         try {
             const w = width || 1;
             const h = height || 1;
-            const resizedData = resizeImage(imgRef.current, w, h);
+
+            // 크롭 적용
+            const hasCrop = cropRect.top > 0 || cropRect.bottom > 0 || cropRect.left > 0 || cropRect.right > 0;
+            const source = hasCrop ? cropImage(imgRef.current, cropRect) : imgRef.current;
+
+            const resizedData = resizeImage(source, w, h);
 
             // 필터 적용
             const filteredData = applyFilter(resizedData, selectedFilter);
@@ -249,18 +272,25 @@ function PatternGenerator() {
 
                         {imagePreview && (
                             <div className="uk-margin-top uk-text-center">
-                                <img
-                                    src={imagePreview}
-                                    alt="원본 미리보기"
-                                    style={{
-                                        maxWidth: '100%',
-                                        maxHeight: '200px',
-                                        borderRadius: '8px',
-                                        border: '1px solid #eee'
-                                    }}
+                                <ImageCropper
+                                    imageSrc={imagePreview}
+                                    cropRect={cropRect}
+                                    onCropChange={handleCropChange}
                                 />
                                 <p className="uk-text-meta uk-margin-small-top">
-                                    원본 크기: {imgRef.current?.width} × {imgRef.current?.height}px
+                                    원본: {imgRef.current?.width} × {imgRef.current?.height}px
+                                    {(cropRect.top > 0 || cropRect.bottom > 0 || cropRect.left > 0 || cropRect.right > 0) && (
+                                        <span>
+                                            {' → '}크롭: {Math.round(imgRef.current?.width * (1 - cropRect.left - cropRect.right))} × {Math.round(imgRef.current?.height * (1 - cropRect.top - cropRect.bottom))}px
+                                            <button
+                                                className="uk-button uk-button-link uk-margin-small-left"
+                                                style={{ fontSize: '0.85em', textDecoration: 'underline' }}
+                                                onClick={() => handleCropChange({ top: 0, bottom: 0, left: 0, right: 0 })}
+                                            >
+                                                초기화
+                                            </button>
+                                        </span>
+                                    )}
                                 </p>
                             </div>
                         )}

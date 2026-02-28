@@ -15,6 +15,31 @@ export function loadImage(file) {
 }
 
 /**
+ * 이미지를 지정 영역으로 크롭
+ * @param {HTMLImageElement} img - 원본 이미지
+ * @param {Object} cropRect - 크롭 영역 (원본 이미지 비율 0~1)
+ * @param {number} cropRect.top - 위에서 자를 비율
+ * @param {number} cropRect.bottom - 아래에서 자를 비율
+ * @param {number} cropRect.left - 왼쪽에서 자를 비율
+ * @param {number} cropRect.right - 오른쪽에서 자를 비율
+ * @returns {HTMLCanvasElement} - 크롭된 이미지 캔버스
+ */
+export function cropImage(img, cropRect) {
+    const { top, bottom, left, right } = cropRect;
+    const sx = Math.round(img.width * left);
+    const sy = Math.round(img.height * top);
+    const sw = Math.round(img.width * (1 - left - right));
+    const sh = Math.round(img.height * (1 - top - bottom));
+
+    const canvas = document.createElement('canvas');
+    canvas.width = sw;
+    canvas.height = sh;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
+    return canvas;
+}
+
+/**
  * 이미지를 지정된 크기로 리사이즈 (Nearest Neighbor 보간법)
  */
 export function resizeImage(img, targetWidth, targetHeight) {
