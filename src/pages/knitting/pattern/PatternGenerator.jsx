@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { loadImage, resizeImage, calculateHeight, createPixelGrid, drawPreview } from '../../../utils/imageProcessor.js';
 import { quantizeColors } from '../../../utils/colorQuantization.js';
 import { exportToExcel, exportToPdf } from '../../../utils/exportUtils.js';
+import { FILTERS, applyFilter } from '../../../utils/imageFilters.js';
 
 /**
  * 커스텀 팔레트로 픽셀 그리드를 다시 매핑
@@ -75,8 +76,9 @@ function PatternGenerator() {
     const [isExporting, setIsExporting] = useState(false);
     const [imageLoaded, setImageLoaded] = useState(false);
     const [guidelineColor, setGuidelineColor] = useState('#FF0000');
-    const [genWidth, setGenWidth] = useState(0);   // 생성된 도안의 실제 크기
+    const [genWidth, setGenWidth] = useState(0);
     const [genHeight, setGenHeight] = useState(0);
+    const [selectedFilter, setSelectedFilter] = useState('none');
 
     const imgRef = useRef(null);
     const canvasRef = useRef(null);
@@ -106,6 +108,7 @@ function PatternGenerator() {
         setPixelGrid(null);
         setPalette(null);
         setImageLoaded(false);
+        setSelectedFilter('none');
 
         const reader = new FileReader();
         reader.onload = (ev) => setImagePreview(ev.target.result);
@@ -152,9 +155,12 @@ function PatternGenerator() {
             const w = width || 1;
             const h = height || 1;
             const resizedData = resizeImage(imgRef.current, w, h);
-            resizedDataRef.current = resizedData;
 
-            const { quantizedData, palette: newPalette } = quantizeColors(resizedData.data, colorCount);
+            // 필터 적용
+            const filteredData = applyFilter(resizedData, selectedFilter);
+            resizedDataRef.current = filteredData;
+
+            const { quantizedData, palette: newPalette } = quantizeColors(filteredData.data, colorCount);
             const grid = createPixelGrid(quantizedData, w, h, newPalette);
 
             setGenWidth(w);
@@ -167,7 +173,7 @@ function PatternGenerator() {
         } finally {
             setIsProcessing(false);
         }
-    }, [width, height, colorCount]);
+    }, [width, height, colorCount, selectedFilter]);
 
     // ── 색상 수동 변경 → 실시간 미리보기 반영 ──
     const handleColorChange = useCallback((idx, hexValue) => {
@@ -302,6 +308,23 @@ function PatternGenerator() {
                                             onChange={handleColorCountChange}
                                         />
                                     </div>
+                                </div>
+
+                                {/* 필터 선택 */}
+                                <div className="uk-margin-top">
+                                    <label className="uk-form-label uk-text-bold">이미지 필터</label>
+                                    <select
+                                        id="filter-select"
+                                        className="uk-select uk-form-large"
+                                        value={selectedFilter}
+                                        onChange={(e) => setSelectedFilter(e.target.value)}
+                                    >
+                                        {FILTERS.map(f => (
+                                            <option key={f.id} value={f.id}>
+                                                {f.name} — {f.description}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
                             </div>
                         </div>
