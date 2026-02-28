@@ -1,9 +1,10 @@
 import './App.css'
-import {BrowserRouter, Route, Routes} from 'react-router-dom'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Layout from './components/layout/Layout.jsx'
 import Home from './pages/Home.jsx'
 import GaugeConverter from './pages/knitting/converter/GaugeConverter.jsx'
 import StitchChangeCalculator from "./pages/knitting/converter/StitchChangeCalculator.jsx";
+import PatternGenerator from "./pages/knitting/pattern/PatternGenerator.jsx";
 
 function App() {
 
@@ -12,9 +13,10 @@ function App() {
             <BrowserRouter basename={import.meta.env.VITE_BASE_URL}>
                 <Routes>
                     <Route element={<Layout />}>
-                        <Route path='/' element={<Home/>}/>
-                        <Route path='/knitting/converter/gauge' element={<GaugeConverter/>}/>
-                        <Route path='/knitting/converter/stitch' element={<StitchChangeCalculator/>}/>
+                        <Route path='/' element={<Home />} />
+                        <Route path='/knitting/converter/gauge' element={<GaugeConverter />} />
+                        <Route path='/knitting/converter/stitch' element={<StitchChangeCalculator />} />
+                        <Route path='/knitting/pattern/generator' element={<PatternGenerator />} />
                     </Route>
                 </Routes>
             </BrowserRouter>

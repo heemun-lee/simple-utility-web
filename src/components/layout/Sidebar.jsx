@@ -82,6 +82,14 @@ function Sidebar() {
                                             코 수 변환 계산기
                                         </Link>
                                     </li>
+                                    <li>
+                                        <Link
+                                            to="/knitting/pattern/generator"
+                                            data-uk-toggle="target: #offcanvas-nav"
+                                        >
+                                            배색뜨기 도안 생성기
+                                        </Link>
+                                    </li>
                                 </ul>
                             </li>
                         </ul>

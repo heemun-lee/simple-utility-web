@@ -15,10 +15,17 @@ function Home() {
             description: '목표 코 수에 도달하기 위한 코 늘림/줄임 패턴을 자동으로 계산합니다',
             path: '/knitting/converter/stitch',
             category: '뜨개질'
+        },
+        {
+            id: 3,
+            title: '배색뜨기 도안 생성기',
+            description: '이미지를 업로드하여 배색뜨기 도안을 생성하고 PDF/엑셀로 내보낼 수 있습니다',
+            path: '/knitting/pattern/generator',
+            category: '뜨개질'
         }
     ]
     return (
-        <div className="uk-section uk-section-muted" style={{minHeight: '100vh'}}>
+        <div className="uk-section uk-section-muted" style={{ minHeight: '100vh' }}>
             <div className="uk-container">
                 {/* 헤더 */}
                 <div className="uk-margin-large-bottom">
