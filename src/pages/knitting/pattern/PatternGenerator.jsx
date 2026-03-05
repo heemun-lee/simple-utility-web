@@ -102,7 +102,9 @@ function PatternGenerator() {
     useEffect(() => {
         if (!pixelGrid || !palette || !canvasRef.current || !genWidth || !genHeight) return;
         const ctx = canvasRef.current.getContext('2d');
-        const cellSize = Math.max(4, Math.min(12, Math.floor(600 / Math.max(genWidth, genHeight))));
+        // 가로: cellSize, 세로: cellSize * 2/3 비율이므로
+        // 캔버스 상 실제 크기는 genWidth * cellSize (가로) vs genHeight * cellSize * 2/3 (세로)
+        const cellSize = Math.max(4, Math.min(12, Math.floor(600 / Math.max(genWidth, genHeight * 2 / 3))));
         drawPreview(ctx, pixelGrid, palette, genWidth, genHeight, cellSize, guidelineEnabled ? guidelineColor : null);
     }, [pixelGrid, palette, genWidth, genHeight, guidelineColor, guidelineEnabled]);
 
@@ -126,9 +128,9 @@ function PatternGenerator() {
         const img = await loadImage(file);
         imgRef.current = img;
 
-        // 기본값: 이미지 픽셀 크기 그대로
+        // 기본값: 이미지 픽셀 크기 (셀 비율 3:2 보정)
         setWidth(img.width);
-        setHeight(img.height);
+        setHeight(Math.round(img.height * 3 / 2));
 
         // 이미지에서 고유 색상 수 추출 (최대 5개)
         const distinctColors = estimateDistinctColors(img);
@@ -147,7 +149,7 @@ function PatternGenerator() {
             const cropW = imgRef.current.width * (1 - cropRect.left - cropRect.right);
             const cropH = imgRef.current.height * (1 - cropRect.top - cropRect.bottom);
             const ratio = cropH / cropW;
-            setHeight(Math.round(newWidth * ratio));
+            setHeight(Math.round(newWidth * ratio * 3 / 2));
         }
     }, [cropRect]);
 
@@ -164,7 +166,7 @@ function PatternGenerator() {
             const cropW = Math.round(imgRef.current.width * (1 - newCrop.left - newCrop.right));
             const cropH = Math.round(imgRef.current.height * (1 - newCrop.top - newCrop.bottom));
             setWidth(cropW);
-            setHeight(cropH);
+            setHeight(Math.round(cropH * 3 / 2));
         }
     }, []);
 

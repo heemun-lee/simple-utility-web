@@ -90,6 +90,7 @@ export function createPixelGrid(quantizedData, width, height, palette) {
 
 /**
  * 도안 미리보기를 캔버스에 그리기
+ * - 셀 비율 가로 3 : 세로 2
  * - 그리드 선 + 5코/5단 가이드라인(두꺼운 선) + 메모리 번호(홀수, 오른쪽 아래 기준)
  *
  * @param {CanvasRenderingContext2D} ctx
@@ -97,10 +98,14 @@ export function createPixelGrid(quantizedData, width, height, palette) {
  * @param {Array<{color: number[]}>} palette
  * @param {number} gridWidth
  * @param {number} gridHeight
- * @param {number} cellSize
- * @param {string} [guidelineColor='#FF0000'] - 가이드라인 색상 (HEX)
+ * @param {number} cellSize - 기준 크기 (이 값을 기반으로 3:2 비율 적용)
+ * @param {string|null} [guidelineColor='#FF0000'] - 가이드라인 색상 (HEX), null이면 비활성
  */
 export function drawPreview(ctx, pixelGrid, palette, gridWidth, gridHeight, cellSize, guidelineColor = '#FF0000') {
+    // 셀 비율 가로 3 : 세로 2
+    const cellW = cellSize;
+    const cellH = Math.round(cellSize * 2 / 3);
+
     // 12px 고정 폰트로 최대 숫자의 텍스트 폭 측정
     const labelFontSize = 12;
     ctx.font = `${labelFontSize}px sans-serif`;
@@ -112,8 +117,8 @@ export function drawPreview(ctx, pixelGrid, palette, gridWidth, gridHeight, cell
     // 하단 여백: 폰트 높이 + 여유
     const bottomMargin = labelFontSize + 6;
 
-    const gridPixelW = gridWidth * cellSize;
-    const gridPixelH = gridHeight * cellSize;
+    const gridPixelW = gridWidth * cellW;
+    const gridPixelH = gridHeight * cellH;
     const canvasWidth = gridPixelW + rightMargin;
     const canvasHeight = gridPixelH + bottomMargin;
 
@@ -130,7 +135,7 @@ export function drawPreview(ctx, pixelGrid, palette, gridWidth, gridHeight, cell
             const colorIdx = pixelGrid[y][x];
             const [r, g, b] = palette[colorIdx].color;
             ctx.fillStyle = `rgb(${r},${g},${b})`;
-            ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+            ctx.fillRect(x * cellW, y * cellH, cellW, cellH);
         }
     }
 
@@ -140,29 +145,29 @@ export function drawPreview(ctx, pixelGrid, palette, gridWidth, gridHeight, cell
 
     for (let x = 0; x <= gridWidth; x++) {
         ctx.beginPath();
-        ctx.moveTo(x * cellSize, 0);
-        ctx.lineTo(x * cellSize, gridPixelH);
+        ctx.moveTo(x * cellW, 0);
+        ctx.lineTo(x * cellW, gridPixelH);
         ctx.stroke();
     }
     for (let y = 0; y <= gridHeight; y++) {
         ctx.beginPath();
-        ctx.moveTo(0, y * cellSize);
-        ctx.lineTo(gridPixelW, y * cellSize);
+        ctx.moveTo(0, y * cellH);
+        ctx.lineTo(gridPixelW, y * cellH);
         ctx.stroke();
     }
 
     // 3. 가이드라인 (5코/5단마다 두꺼운 선)
     if (guidelineColor) {
         ctx.strokeStyle = guidelineColor;
-        ctx.lineWidth = Math.max(1.5, cellSize * 0.15);
+        ctx.lineWidth = Math.max(1.5, Math.min(cellW, cellH) * 0.15);
 
         // 코 가이드라인 (세로선) — 오른쪽에서 카운트
         for (let x = 0; x <= gridWidth; x++) {
             const fromRight = gridWidth - x;
             if (fromRight > 0 && fromRight % 5 === 0) {
                 ctx.beginPath();
-                ctx.moveTo(x * cellSize, 0);
-                ctx.lineTo(x * cellSize, gridPixelH);
+                ctx.moveTo(x * cellW, 0);
+                ctx.lineTo(x * cellW, gridPixelH);
                 ctx.stroke();
             }
         }
@@ -172,8 +177,8 @@ export function drawPreview(ctx, pixelGrid, palette, gridWidth, gridHeight, cell
             const fromBottom = gridHeight - y;
             if (fromBottom > 0 && fromBottom % 5 === 0) {
                 ctx.beginPath();
-                ctx.moveTo(0, y * cellSize);
-                ctx.lineTo(gridPixelW, y * cellSize);
+                ctx.moveTo(0, y * cellH);
+                ctx.lineTo(gridPixelW, y * cellH);
                 ctx.stroke();
             }
         }
@@ -183,15 +188,24 @@ export function drawPreview(ctx, pixelGrid, palette, gridWidth, gridHeight, cell
     ctx.font = `${labelFontSize}px sans-serif`;
     ctx.fillStyle = '#333333';
 
-    // 셀 크기에 따라 번호 표시 간격 결정 (글자 겹침 방지)
-    // 12px 글자 2자리 ≈ 16px 필요 → 간격 * cellSize >= 16 이상이어야 함
-    let labelInterval;
-    if (cellSize * 2 >= 18) {
-        labelInterval = 2; // 홀수 (1, 3, 5, ...)
-    } else if (cellSize * 5 >= 18) {
-        labelInterval = 5; // 5의 배수
+    // 하단 번호 간격: cellW 기준
+    let labelIntervalX;
+    if (cellW * 2 >= 18) {
+        labelIntervalX = 2;
+    } else if (cellW * 5 >= 18) {
+        labelIntervalX = 5;
     } else {
-        labelInterval = 10; // 10의 배수
+        labelIntervalX = 10;
+    }
+
+    // 오른쪽 번호 간격: cellH 기준
+    let labelIntervalY;
+    if (cellH * 2 >= 14) {
+        labelIntervalY = 2;
+    } else if (cellH * 5 >= 14) {
+        labelIntervalY = 5;
+    } else {
+        labelIntervalY = 10;
     }
 
     // 하단: 코 번호 (오른쪽에서 1부터)
@@ -199,11 +213,11 @@ export function drawPreview(ctx, pixelGrid, palette, gridWidth, gridHeight, cell
     ctx.textBaseline = 'top';
     for (let x = 0; x < gridWidth; x++) {
         const stitchNum = gridWidth - x;
-        const show = labelInterval === 2
+        const show = labelIntervalX === 2
             ? (stitchNum % 2 === 1)
-            : (stitchNum % labelInterval === 0);
+            : (stitchNum % labelIntervalX === 0);
         if (show) {
-            ctx.fillText(stitchNum, x * cellSize + cellSize / 2, gridPixelH + 3);
+            ctx.fillText(stitchNum, x * cellW + cellW / 2, gridPixelH + 3);
         }
     }
 
@@ -212,11 +226,12 @@ export function drawPreview(ctx, pixelGrid, palette, gridWidth, gridHeight, cell
     ctx.textBaseline = 'middle';
     for (let y = 0; y < gridHeight; y++) {
         const rowNum = gridHeight - y;
-        const show = labelInterval === 2
+        const show = labelIntervalY === 2
             ? (rowNum % 2 === 1)
-            : (rowNum % labelInterval === 0);
+            : (rowNum % labelIntervalY === 0);
         if (show) {
-            ctx.fillText(rowNum, gridPixelW + 3, y * cellSize + cellSize / 2);
+            ctx.fillText(rowNum, gridPixelW + 3, y * cellH + cellH / 2);
         }
     }
 }
+
