@@ -26,24 +26,22 @@ export async function exportToExcel(pixelGrid, palette, width, height, guideline
         ? 'FF' + guidelineColor.map(c => c.toString(16).padStart(2, '0')).join('').toUpperCase()
         : null;
 
-    // 열 너비 설정
-    sheet.getColumn(1).width = 4;
-    for (let x = 0; x < width; x++) {
-        sheet.getColumn(x + 2).width = 3;
-    }
+    // 셀 비율 가로 3 : 세로 2
+    const colWidth = 4.0;
+    const rowHeight = 16;
 
     // 열 너비 설정
-    sheet.getColumn(1).width = 4;
+    sheet.getColumn(1).width = colWidth;
     for (let x = 0; x < width; x++) {
-        sheet.getColumn(x + 2).width = 3;
+        sheet.getColumn(x + 2).width = colWidth;
     }
     // 오른쪽 단 번호 열
-    sheet.getColumn(width + 2).width = 4;
+    sheet.getColumn(width + 2).width = 5;
 
     // 도안 데이터 행
     for (let y = 0; y < height; y++) {
         const row = sheet.getRow(y + 1);
-        row.height = 18;
+        row.height = rowHeight;
 
         for (let x = 0; x < width; x++) {
             const colorIdx = pixelGrid[y][x];
@@ -161,12 +159,16 @@ export function exportToPdf(pixelGrid, palette, width, height, scalePercent = 10
     const usableWidth = pageWidth - margin * 2 - headerHeight;
     const usableHeight = pageHeight - margin * 2 - headerHeight;
 
-    const baseCellSize = Math.min(usableWidth / width, usableHeight / height);
+    // 셀 비율 가로 3 : 세로 2
+    const baseCellW = usableWidth / width;
+    const baseCellH = usableHeight / height;
+    const baseUnit = Math.min(baseCellW / 3, baseCellH / 2);
     const scaleFactor = scalePercent / 100;
-    const cellSize = baseCellSize * scaleFactor;
+    const cellW = baseUnit * 3 * scaleFactor;
+    const cellH = baseUnit * 2 * scaleFactor;
 
-    const colsPerPage = Math.floor(usableWidth / cellSize);
-    const rowsPerPage = Math.floor(usableHeight / cellSize);
+    const colsPerPage = Math.floor(usableWidth / cellW);
+    const rowsPerPage = Math.floor(usableHeight / cellH);
 
     const pageCols = Math.ceil(width / colsPerPage);
     const pageRows = Math.ceil(height / rowsPerPage);
@@ -204,7 +206,7 @@ export function exportToPdf(pixelGrid, palette, width, height, scalePercent = 10
                     const colorIdx = pixelGrid[startY + y][startX + x];
                     const [r, g, b] = palette[colorIdx].color;
                     doc.setFillColor(r, g, b);
-                    doc.rect(offsetX + x * cellSize, offsetY + y * cellSize, cellSize, cellSize, 'F');
+                    doc.rect(offsetX + x * cellW, offsetY + y * cellH, cellW, cellH, 'F');
                 }
             }
 
@@ -212,10 +214,10 @@ export function exportToPdf(pixelGrid, palette, width, height, scalePercent = 10
             doc.setDrawColor(180);
             doc.setLineWidth(0.1);
             for (let x = 0; x <= currentCols; x++) {
-                doc.line(offsetX + x * cellSize, offsetY, offsetX + x * cellSize, offsetY + currentRows * cellSize);
+                doc.line(offsetX + x * cellW, offsetY, offsetX + x * cellW, offsetY + currentRows * cellH);
             }
             for (let y = 0; y <= currentRows; y++) {
-                doc.line(offsetX, offsetY + y * cellSize, offsetX + currentCols * cellSize, offsetY + y * cellSize);
+                doc.line(offsetX, offsetY + y * cellH, offsetX + currentCols * cellW, offsetY + y * cellH);
             }
 
             // 가이드라인 (5코/5단마다 두꺼운 선)
@@ -223,50 +225,48 @@ export function exportToPdf(pixelGrid, palette, width, height, scalePercent = 10
                 doc.setDrawColor(guidelineColor[0], guidelineColor[1], guidelineColor[2]);
                 doc.setLineWidth(0.4);
 
-                // 코 가이드라인 (세로선)
                 for (let x = 0; x <= currentCols; x++) {
                     const stitchNum = width - (startX + x);
                     if (stitchNum > 0 && stitchNum % 5 === 0) {
-                        doc.line(offsetX + x * cellSize, offsetY, offsetX + x * cellSize, offsetY + currentRows * cellSize);
+                        doc.line(offsetX + x * cellW, offsetY, offsetX + x * cellW, offsetY + currentRows * cellH);
                     }
                 }
 
-                // 단 가이드라인 (가로선)
                 for (let y = 0; y <= currentRows; y++) {
                     const rowNum = height - (startY + y);
                     if (rowNum > 0 && rowNum % 5 === 0) {
-                        doc.line(offsetX, offsetY + y * cellSize, offsetX + currentCols * cellSize, offsetY + y * cellSize);
+                        doc.line(offsetX, offsetY + y * cellH, offsetX + currentCols * cellW, offsetY + y * cellH);
                     }
                 }
             }
 
-            // 메모리 번호 — 그리드 바깥 (하단: 코 번호, 오른쪽: 단 번호)
+            // 메모리 번호
             const pdfFontSize = 8;
             doc.setFontSize(pdfFontSize);
             doc.setTextColor(100);
 
-            // 셀 크기(mm)에 따라 번호 표시 간격 결정 (8pt ≈ 2.8mm)
-            let labelInterval;
-            if (cellSize * 2 >= 4) {
-                labelInterval = 2; // 홀수
-            } else if (cellSize * 5 >= 4) {
-                labelInterval = 5; // 5의 배수
-            } else {
-                labelInterval = 10; // 10의 배수
-            }
+            // 번호 간격: 가로는 cellW 기준, 세로는 cellH 기준
+            let labelIntervalX;
+            if (cellW * 2 >= 4) { labelIntervalX = 2; }
+            else if (cellW * 5 >= 4) { labelIntervalX = 5; }
+            else { labelIntervalX = 10; }
 
-            const shouldShow = (num) => labelInterval === 2
-                ? (num % 2 === 1)
-                : (num % labelInterval === 0);
+            let labelIntervalY;
+            if (cellH * 2 >= 3) { labelIntervalY = 2; }
+            else if (cellH * 5 >= 3) { labelIntervalY = 5; }
+            else { labelIntervalY = 10; }
+
+            const shouldShowX = (num) => labelIntervalX === 2 ? (num % 2 === 1) : (num % labelIntervalX === 0);
+            const shouldShowY = (num) => labelIntervalY === 2 ? (num % 2 === 1) : (num % labelIntervalY === 0);
 
             // 하단: 코 번호
             for (let x = 0; x < currentCols; x++) {
                 const stitchNum = width - (startX + x);
-                if (shouldShow(stitchNum)) {
+                if (shouldShowX(stitchNum)) {
                     doc.text(
                         String(stitchNum),
-                        offsetX + x * cellSize + cellSize / 2,
-                        offsetY + currentRows * cellSize + 2.5,
+                        offsetX + x * cellW + cellW / 2,
+                        offsetY + currentRows * cellH + 2.5,
                         { align: 'center' }
                     );
                 }
@@ -275,11 +275,11 @@ export function exportToPdf(pixelGrid, palette, width, height, scalePercent = 10
             // 오른쪽: 단 번호
             for (let y = 0; y < currentRows; y++) {
                 const rowNum = height - (startY + y);
-                if (shouldShow(rowNum)) {
+                if (shouldShowY(rowNum)) {
                     doc.text(
                         String(rowNum),
-                        offsetX + currentCols * cellSize + 1,
-                        offsetY + y * cellSize + cellSize / 2 + 0.5,
+                        offsetX + currentCols * cellW + 1,
+                        offsetY + y * cellH + cellH / 2 + 0.5,
                         { align: 'left' }
                     );
                 }
