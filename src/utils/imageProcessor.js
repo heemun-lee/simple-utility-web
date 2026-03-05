@@ -152,28 +152,30 @@ export function drawPreview(ctx, pixelGrid, palette, gridWidth, gridHeight, cell
     }
 
     // 3. 가이드라인 (5코/5단마다 두꺼운 선)
-    ctx.strokeStyle = guidelineColor;
-    ctx.lineWidth = Math.max(1.5, cellSize * 0.15);
+    if (guidelineColor) {
+        ctx.strokeStyle = guidelineColor;
+        ctx.lineWidth = Math.max(1.5, cellSize * 0.15);
 
-    // 코 가이드라인 (세로선) — 오른쪽에서 카운트
-    for (let x = 0; x <= gridWidth; x++) {
-        const fromRight = gridWidth - x;
-        if (fromRight > 0 && fromRight % 5 === 0) {
-            ctx.beginPath();
-            ctx.moveTo(x * cellSize, 0);
-            ctx.lineTo(x * cellSize, gridPixelH);
-            ctx.stroke();
+        // 코 가이드라인 (세로선) — 오른쪽에서 카운트
+        for (let x = 0; x <= gridWidth; x++) {
+            const fromRight = gridWidth - x;
+            if (fromRight > 0 && fromRight % 5 === 0) {
+                ctx.beginPath();
+                ctx.moveTo(x * cellSize, 0);
+                ctx.lineTo(x * cellSize, gridPixelH);
+                ctx.stroke();
+            }
         }
-    }
 
-    // 단 가이드라인 (가로선) — 아래에서 카운트
-    for (let y = 0; y <= gridHeight; y++) {
-        const fromBottom = gridHeight - y;
-        if (fromBottom > 0 && fromBottom % 5 === 0) {
-            ctx.beginPath();
-            ctx.moveTo(0, y * cellSize);
-            ctx.lineTo(gridPixelW, y * cellSize);
-            ctx.stroke();
+        // 단 가이드라인 (가로선) — 아래에서 카운트
+        for (let y = 0; y <= gridHeight; y++) {
+            const fromBottom = gridHeight - y;
+            if (fromBottom > 0 && fromBottom % 5 === 0) {
+                ctx.beginPath();
+                ctx.moveTo(0, y * cellSize);
+                ctx.lineTo(gridPixelW, y * cellSize);
+                ctx.stroke();
+            }
         }
     }
 

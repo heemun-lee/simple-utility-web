@@ -125,11 +125,14 @@ export function quantizeColors(imageData, k, maxIterations = 20) {
     }
 
     // 팔레트 생성 (사용 비율 포함, 비율이 높은 순으로 정렬)
-    const palette = centroids.map((color, idx) => ({
+    const originalPalette = centroids.map((color, idx) => ({
         color: [...color],
         count: clusterCounts[idx],
-        percentage: parseFloat(((clusterCounts[idx] / pixelCount) * 100).toFixed(1))
-    })).sort((a, b) => b.percentage - a.percentage);
+        percentage: parseFloat(((clusterCounts[idx] / pixelCount) * 100).toFixed(1)),
+        originalIndex: idx // 정렬 후에도 원래 assignments 배열의 인덱스를 추적하기 위함
+    }));
 
-    return { quantizedData, palette };
+    const palette = [...originalPalette].sort((a, b) => b.percentage - a.percentage);
+
+    return { quantizedData, palette, assignments };
 }

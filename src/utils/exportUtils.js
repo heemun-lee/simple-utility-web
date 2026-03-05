@@ -22,7 +22,9 @@ export async function exportToExcel(pixelGrid, palette, width, height, guideline
     const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet('도안');
 
-    const guideHex = 'FF' + guidelineColor.map(c => c.toString(16).padStart(2, '0')).join('').toUpperCase();
+    const guideHex = guidelineColor
+        ? 'FF' + guidelineColor.map(c => c.toString(16).padStart(2, '0')).join('').toUpperCase()
+        : null;
 
     // 열 너비 설정
     sheet.getColumn(1).width = 4;
@@ -65,16 +67,18 @@ export async function exportToExcel(pixelGrid, palette, width, height, guideline
             };
 
             // 가이드라인: 5코/5단마다 두꺼운 선
-            const stitchNum = width - x;  // 오른쪽에서 카운트
-            const fromBottom = height - y; // 아래에서 카운트
+            if (guideHex) {
+                const stitchNum = width - x;  // 오른쪽에서 카운트
+                const fromBottom = height - y; // 아래에서 카운트
 
-            // 코 가이드라인: 오른쪽에서 5의 배수 → 해당 셀의 왼쪽 선
-            if (stitchNum > 0 && stitchNum % 5 === 0) {
-                border.left = { style: 'medium', color: { argb: guideHex } };
-            }
-            // 단 가이드라인: 아래에서 5의 배수 → 해당 셀의 위쪽 선
-            if (fromBottom > 0 && fromBottom % 5 === 0) {
-                border.top = { style: 'medium', color: { argb: guideHex } };
+                // 코 가이드라인: 오른쪽에서 5의 배수 → 해당 셀의 왼쪽 선
+                if (stitchNum > 0 && stitchNum % 5 === 0) {
+                    border.left = { style: 'medium', color: { argb: guideHex } };
+                }
+                // 단 가이드라인: 아래에서 5의 배수 → 해당 셀의 위쪽 선
+                if (fromBottom > 0 && fromBottom % 5 === 0) {
+                    border.top = { style: 'medium', color: { argb: guideHex } };
+                }
             }
 
             cell.border = border;
@@ -215,22 +219,24 @@ export function exportToPdf(pixelGrid, palette, width, height, scalePercent = 10
             }
 
             // 가이드라인 (5코/5단마다 두꺼운 선)
-            doc.setDrawColor(guidelineColor[0], guidelineColor[1], guidelineColor[2]);
-            doc.setLineWidth(0.4);
+            if (guidelineColor) {
+                doc.setDrawColor(guidelineColor[0], guidelineColor[1], guidelineColor[2]);
+                doc.setLineWidth(0.4);
 
-            // 코 가이드라인 (세로선)
-            for (let x = 0; x <= currentCols; x++) {
-                const stitchNum = width - (startX + x);
-                if (stitchNum > 0 && stitchNum % 5 === 0) {
-                    doc.line(offsetX + x * cellSize, offsetY, offsetX + x * cellSize, offsetY + currentRows * cellSize);
+                // 코 가이드라인 (세로선)
+                for (let x = 0; x <= currentCols; x++) {
+                    const stitchNum = width - (startX + x);
+                    if (stitchNum > 0 && stitchNum % 5 === 0) {
+                        doc.line(offsetX + x * cellSize, offsetY, offsetX + x * cellSize, offsetY + currentRows * cellSize);
+                    }
                 }
-            }
 
-            // 단 가이드라인 (가로선)
-            for (let y = 0; y <= currentRows; y++) {
-                const rowNum = height - (startY + y);
-                if (rowNum > 0 && rowNum % 5 === 0) {
-                    doc.line(offsetX, offsetY + y * cellSize, offsetX + currentCols * cellSize, offsetY + y * cellSize);
+                // 단 가이드라인 (가로선)
+                for (let y = 0; y <= currentRows; y++) {
+                    const rowNum = height - (startY + y);
+                    if (rowNum > 0 && rowNum % 5 === 0) {
+                        doc.line(offsetX, offsetY + y * cellSize, offsetX + currentCols * cellSize, offsetY + y * cellSize);
+                    }
                 }
             }
 

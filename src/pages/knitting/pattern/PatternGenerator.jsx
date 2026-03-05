@@ -6,26 +6,29 @@ import { FILTERS, applyFilter } from '../../../utils/imageFilters.js';
 import ImageCropper from '../../../components/ImageCropper.jsx';
 
 /**
- * 커스텀 팔레트로 픽셀 그리드를 다시 매핑
+ * 커스텀 팔레트로 픽셀 그리드를 다시 생성 (기초 양자화 할당 정보 기반)
  */
-function remapWithCustomPalette(imageData, width, height, customPalette) {
+function createGridFromAssignments(assignments, width, height, customPalette) {
     const pixelCount = width * height;
     const grid = [];
     const counts = new Array(customPalette.length).fill(0);
 
+    // 원래 할당 정보(assignment)를 정렬된 팔레트의 인덱스로 매핑하기 위한 맵 생성
+    // (assignment는 정렬 전 centroids의 인덱스를 담고 있고, 화면의 팔레트는 정렬됨)
+    const assignmentToSortedIdx = {};
+    customPalette.forEach((entry, sortedIdx) => {
+        assignmentToSortedIdx[entry.originalIndex] = sortedIdx;
+    });
+
     for (let y = 0; y < height; y++) {
         const row = [];
         for (let x = 0; x < width; x++) {
-            const idx = (y * width + x) * 4;
-            const r = imageData[idx], g = imageData[idx + 1], b = imageData[idx + 2];
-            let bestIdx = 0, bestDist = Infinity;
-            for (let p = 0; p < customPalette.length; p++) {
-                const [pr, pg, pb] = customPalette[p].color;
-                const dist = (r - pr) ** 2 + (g - pg) ** 2 + (b - pb) ** 2;
-                if (dist < bestDist) { bestDist = dist; bestIdx = p; }
-            }
-            row.push(bestIdx);
-            counts[bestIdx]++;
+            const pixelIdx = y * width + x;
+            const originalCluster = assignments[pixelIdx];
+            const sortedIdx = assignmentToSortedIdx[originalCluster];
+
+            row.push(sortedIdx);
+            counts[sortedIdx]++;
         }
         grid.push(row);
     }
@@ -76,11 +79,13 @@ function PatternGenerator() {
     const [isProcessing, setIsProcessing] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
     const [imageLoaded, setImageLoaded] = useState(false);
-    const [guidelineColor, setGuidelineColor] = useState('#FF0000');
+    const [guidelineColor, setGuidelineColor] = useState('#D9E5FF');
+    const [guidelineEnabled, setGuidelineEnabled] = useState(true);
     const [genWidth, setGenWidth] = useState(0);
     const [genHeight, setGenHeight] = useState(0);
     const [selectedFilter, setSelectedFilter] = useState('none');
     const [cropRect, setCropRect] = useState({ top: 0, bottom: 0, left: 0, right: 0 });
+    const [baseAssignments, setBaseAssignments] = useState(null); // 양자화된 픽셀 군집 정보
 
     const imgRef = useRef(null);
     const canvasRef = useRef(null);
@@ -98,8 +103,8 @@ function PatternGenerator() {
         if (!pixelGrid || !palette || !canvasRef.current || !genWidth || !genHeight) return;
         const ctx = canvasRef.current.getContext('2d');
         const cellSize = Math.max(4, Math.min(12, Math.floor(600 / Math.max(genWidth, genHeight))));
-        drawPreview(ctx, pixelGrid, palette, genWidth, genHeight, cellSize, guidelineColor);
-    }, [pixelGrid, palette, genWidth, genHeight, guidelineColor]);
+        drawPreview(ctx, pixelGrid, palette, genWidth, genHeight, cellSize, guidelineEnabled ? guidelineColor : null);
+    }, [pixelGrid, palette, genWidth, genHeight, guidelineColor, guidelineEnabled]);
 
     // ── 이미지 업로드 처리 ──
     const handleImageUpload = useCallback(async (e) => {
@@ -112,6 +117,7 @@ function PatternGenerator() {
         setImageLoaded(false);
         setSelectedFilter('none');
         setCropRect({ top: 0, bottom: 0, left: 0, right: 0 });
+        setBaseAssignments(null);
 
         const reader = new FileReader();
         reader.onload = (ev) => setImagePreview(ev.target.result);
@@ -183,11 +189,12 @@ function PatternGenerator() {
             const filteredData = applyFilter(resizedData, selectedFilter);
             resizedDataRef.current = filteredData;
 
-            const { quantizedData, palette: newPalette } = quantizeColors(filteredData.data, colorCount);
+            const { quantizedData, palette: newPalette, assignments } = quantizeColors(filteredData.data, colorCount);
             const grid = createPixelGrid(quantizedData, w, h, newPalette);
 
             setGenWidth(w);
             setGenHeight(h);
+            setBaseAssignments(assignments);
             setPixelGrid(grid);
             setPalette(newPalette);
         } catch (err) {
@@ -200,42 +207,42 @@ function PatternGenerator() {
 
     // ── 색상 수동 변경 → 실시간 미리보기 반영 ──
     const handleColorChange = useCallback((idx, hexValue) => {
-        if (!palette || !resizedDataRef.current || !genWidth || !genHeight) return;
+        if (!palette || !baseAssignments || !genWidth || !genHeight) return;
         const newRgb = hexToRgb(hexValue);
         const newPalette = palette.map((entry, i) =>
             i === idx ? { ...entry, color: newRgb } : entry
         );
 
-        const { grid, palette: updatedPalette } = remapWithCustomPalette(
-            resizedDataRef.current.data, genWidth, genHeight, newPalette
+        const { grid, palette: updatedPalette } = createGridFromAssignments(
+            baseAssignments, genWidth, genHeight, newPalette
         );
         setPixelGrid(grid);
         setPalette(updatedPalette);
-    }, [palette, genWidth, genHeight]);
+    }, [palette, baseAssignments, genWidth, genHeight]);
 
     // ── 내보내기 ──
     const handleExportExcel = useCallback(async () => {
         if (!pixelGrid || !palette) return;
         setIsExporting(true);
         try {
-            await exportToExcel(pixelGrid, palette, genWidth, genHeight, hexToRgb(guidelineColor));
+            await exportToExcel(pixelGrid, palette, genWidth, genHeight, guidelineEnabled ? hexToRgb(guidelineColor) : null);
         } catch (err) {
             console.error('엑셀 내보내기 오류:', err);
             alert('엑셀 내보내기 중 오류가 발생했습니다.');
         } finally {
             setIsExporting(false);
         }
-    }, [pixelGrid, palette, genWidth, genHeight, guidelineColor]);
+    }, [pixelGrid, palette, genWidth, genHeight, guidelineColor, guidelineEnabled]);
 
     const handleExportPdf = useCallback(() => {
         if (!pixelGrid || !palette) return;
         try {
-            exportToPdf(pixelGrid, palette, genWidth, genHeight, pdfScale, hexToRgb(guidelineColor));
+            exportToPdf(pixelGrid, palette, genWidth, genHeight, pdfScale, guidelineEnabled ? hexToRgb(guidelineColor) : null);
         } catch (err) {
             console.error('PDF 내보내기 오류:', err);
             alert('PDF 내보내기 중 오류가 발생했습니다.');
         }
-    }, [pixelGrid, palette, genWidth, genHeight, pdfScale, guidelineColor]);
+    }, [pixelGrid, palette, genWidth, genHeight, pdfScale, guidelineColor, guidelineEnabled]);
 
     return (
         <div className="uk-section uk-section-muted">
@@ -411,11 +418,12 @@ function PatternGenerator() {
                                                 width: '40px',
                                                 height: '40px',
                                                 borderRadius: '6px',
-                                                backgroundColor: guidelineColor,
+                                                backgroundColor: guidelineEnabled ? guidelineColor : '#eee',
                                                 border: '2px solid #ddd',
-                                                cursor: 'pointer',
+                                                cursor: guidelineEnabled ? 'pointer' : 'default',
                                                 flexShrink: 0,
-                                                display: 'block'
+                                                display: 'block',
+                                                opacity: guidelineEnabled ? 1 : 0.4
                                             }}
                                             title="가이드라인 색상 변경"
                                         >
@@ -423,21 +431,31 @@ function PatternGenerator() {
                                                 type="color"
                                                 value={guidelineColor}
                                                 onChange={(e) => setGuidelineColor(e.target.value)}
+                                                disabled={!guidelineEnabled}
                                                 style={{
                                                     position: 'absolute',
                                                     opacity: 0,
                                                     width: '100%',
                                                     height: '100%',
-                                                    cursor: 'pointer',
+                                                    cursor: guidelineEnabled ? 'pointer' : 'default',
                                                     top: 0,
                                                     left: 0
                                                 }}
                                             />
                                         </label>
-                                        <div>
+                                        <div style={{ flex: 1 }}>
                                             <div className="uk-text-bold uk-text-small">가이드라인 색상</div>
                                             <div className="uk-text-meta">5코/5단마다 표시되는 굵은 선 색상</div>
                                         </div>
+                                        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', flexShrink: 0 }}>
+                                            <input
+                                                type="checkbox"
+                                                className="uk-checkbox"
+                                                checked={guidelineEnabled}
+                                                onChange={(e) => setGuidelineEnabled(e.target.checked)}
+                                            />
+                                            <span className="uk-text-small">표시</span>
+                                        </label>
                                     </div>
                                 </div>
                                 <div className="uk-grid uk-grid-small uk-child-width-1-2 uk-child-width-1-3@s" data-uk-grid>
